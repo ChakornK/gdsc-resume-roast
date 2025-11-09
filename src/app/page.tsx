@@ -1,7 +1,5 @@
 "use client";
-import { s3 } from "@/lib/aws";
 import { ChangeEvent, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useGlobal } from "@/hooks/useGlobal";
@@ -59,16 +57,12 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const uniqueFileName = `${uuidv4()}-${file.name}`;
-      const params = {
-        Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME || "",
-        Key: `resumes/${uniqueFileName}`,
-        Body: file,
-        ContentType: file.type,
-      };
-      const { Location } = await s3.upload(params).promise();
-      const res = await axios.post("/api/resume/new", {
-        link: Location
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await axios.post("/api/resume/new", formData, {
+        "headers": {
+          "Content-Type": "multipart/form-data"
+        }
       });
       setResumeUploaded(res.data.id);
     } catch (error) {
