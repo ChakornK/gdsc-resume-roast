@@ -57,14 +57,12 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
         </div>
 
         <div className="flex flex-col items-center space-y-4">
-          <a href={r.resumeLink} target="_blank" rel="noopener noreferrer">
-            <iframe
-              src={`https://docs.google.com/viewer?url=${encodeURIComponent(
-                r.resumeLink
-              )}&embedded=true`}
-              className="border rounded-lg w-full h-full min-h-80 object-cover"
-            />
-          </a>
+          <iframe
+            src={`https://docs.google.com/viewer?url=${encodeURIComponent(
+              r.resumeLink
+            )}&embedded=true`}
+            className="border rounded-lg w-full h-full min-h-80 object-cover"
+          />
           <div className="flex flex-row space-x-2">
             <a
               href={r.resumeLink}
