@@ -25,10 +25,13 @@ const RUBRICS = [
 ] as (keyof Ratings)[];
 
 export default function Rate() {
-  const { resumeUploaded } = useGlobal();
+  const { resumeUploaded, resumesRated } = useGlobal();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [rated, setRated] = useState<number>(0);
+  const [resumesAvailToRate, setResumesAvailToRate] = useState<number>(
+    MINIMAL_RESUMES_TO_RATE
+  );
 
   const router = useRouter();
 
@@ -42,7 +45,9 @@ export default function Rate() {
           const res = await axios.post("/api/resume/query", {
             id: resumeUploaded,
           });
-          setResumes(res.data);
+          setResumes(
+            res.data.filter((r: Resume) => !resumesRated.includes(r.id))
+          );
         } finally {
           setLoading(false);
         }
@@ -51,19 +56,21 @@ export default function Rate() {
     }
   }, [resumeUploaded, router]);
 
+  useEffect(() => {
+    setResumesAvailToRate(Math.min(resumes.length, MINIMAL_RESUMES_TO_RATE));
+  }, [resumes]);
+
   return (
     <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
         Rate others' resumes!
       </div>
 
-      {rated < Math.min(resumes.length, MINIMAL_RESUMES_TO_RATE) ? (
+      {rated < resumesAvailToRate ? (
         <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
           You have to rate{" "}
-          <span className="font-bold">
-            {Math.min(resumes.length, MINIMAL_RESUMES_TO_RATE) - rated}
-          </span>{" "}
-          more resumes before proceeding.
+          <span className="font-bold">{resumesAvailToRate - rated}</span> more
+          resume{resumesAvailToRate - rated == 1 ? "" : "s"} before proceeding.
         </div>
       ) : (
         <button
@@ -104,6 +111,8 @@ function RateResumeCard({
   const [comments, setComments] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
+  const { resumesRated, setResumesRated } = useGlobal();
+
   const handleRatingChange = useCallback(
     (rubric: keyof Ratings, value: number) => {
       setRatings({
@@ -126,6 +135,7 @@ function RateResumeCard({
       });
       setVisible(false);
       onRatingSubmitted();
+      setResumesRated([...resumesRated, resume.id]);
     } catch {
       alert("Failed to submit review");
     } finally {
