@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/db";
 import { s3 } from "@/lib/aws";
 
@@ -10,7 +9,7 @@ export async function POST(request: NextRequest) {
       throw new Error("Invalid file type");
     }
 
-    const fileName = `${uuidv4()}-${Date.now()}.pdf`;
+    const fileName = `${crypto.randomUUID()}-${Date.now()}.pdf`;
     const params = {
       Bucket: process.env.AWS_S3_BUCKET_NAME || "",
       Key: `resumes/${fileName}`,

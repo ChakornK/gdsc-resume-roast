@@ -59,7 +59,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
 
     if (loading || checkDb === null) {
         return (
-            <main className="flex min-h-screen flex-col justify-center items-center bg-gradient-to-br from-gray-100 to-gray-200 p-8">
+            <main className="flex min-h-screen flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8">
                 <Loading />
             </main>
         );
@@ -67,7 +67,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
 
     if (checkDb === false) {
         return (
-            <main className="flex min-h-screen flex-col justify-center items-center bg-gradient-to-br from-gray-100 to-gray-200 p-8">
+            <main className="flex min-h-screen flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8">
                 <div className="text-3xl md:text-5xl xl:text-7xl font-bold mb-8 text-center">Service Unavailable</div>
                 <div className="text-sm md:text-md xl:text-lg font-semibold mb-8 text-center">We apologize for the inconvenience, please try again later!</div> :
                 <Image src={"/icon.png"} alt="GDSC" width={200} height={200} />

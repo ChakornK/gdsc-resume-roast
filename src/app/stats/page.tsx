@@ -85,7 +85,7 @@ export default function Stats() {
     const selfResume = resumeUploaded ? reviewStats?.find((r) => r.resumeId === resumeUploaded) : null;
 
     return (
-        <main className="flex min-h-screen flex-col justify-center items-center bg-gradient-to-br from-gray-100 to-gray-200 p-8">
+        <main className="flex min-h-screen flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8">
             <div className="text-3xl md:text-5xl xl:text-7xl font-bold mb-8 text-center">Resume Statistics</div>
             {resumeUploaded ?
                 <div className="text-sm md:text-md xl:text-lg font-semibold mb-8 text-center">{selfResume ? "The highlighted resume is yours!" : "No ratings for your resume yet"}</div> :

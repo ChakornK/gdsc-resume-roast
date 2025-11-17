@@ -11,21 +11,21 @@
     "prisma:migrate": "prisma migrate deploy"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "6.19.0",
     "aws-sdk": "^2.1692.0",
-    "axios": "^1.7.7",
-    "next": "15.0.3",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
-    "uuid": "^11.0.3"
+    "axios": "^1.13.2",
+    "next": "16.0.3",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "postcss": "^8",
-    "prisma": "^5.22.0",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "postcss": "^8.5.6",
+    "prisma": "6.19.0",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3"
   }
 }
