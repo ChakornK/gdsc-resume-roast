@@ -101,6 +101,7 @@ function RateResumeCard({
 }) {
   const [visible, setVisible] = useState<boolean>(true);
   const [ratings, setRatings] = useState<Partial<Ratings>>({});
+  const [comments, setComments] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const handleRatingChange = useCallback(
@@ -113,13 +114,15 @@ function RateResumeCard({
     [ratings]
   );
 
-  const handleRatingSubmit = useCallback(async () => {
-    if (Object.keys(ratings).length < RUBRICS.length);
+  const handleRatingSubmit = async () => {
+    if (Object.keys(ratings).length < RUBRICS.length) return;
+    if (!comments) return;
     setSubmitting(true);
     try {
       await axios.post("/api/review/new", {
         resumeId: resume.id,
         ...ratings,
+        comments,
       });
       setVisible(false);
       onRatingSubmitted();
@@ -128,69 +131,82 @@ function RateResumeCard({
     } finally {
       setSubmitting(false);
     }
-  }, [ratings]);
+  };
 
   return (
     visible && (
       <div
         key={resume.id}
-        className="gap-4 grid grid-cols-1 md:grid-cols-2 bg-white shadow-md px-4 py-8 border rounded-lg"
+        className="flex flex-col items-center gap-4 bg-white shadow-md px-4 py-8 border rounded-xl gap"
       >
-        <div className="flex flex-col justify-center items-center space-y-6">
-          {RUBRICS.map((rubric: keyof Ratings) => (
-            <div key={rubric} className="w-full text-center">
-              <h4 className="font-medium text-lg capitalize">{rubric}</h4>
-              <div className="flex justify-center space-x-2">
-                {Array.from({ length: 5 }, (_, i) => i + 1).map((star) => (
-                  <button
-                    key={star}
-                    className={`cursor-pointer text-lg ${
-                      ratings && (ratings[rubric as keyof Ratings] || 0) >= star
-                        ? "text-yellow-500"
-                        : "text-gray-300"
-                    }`}
-                    onClick={() => handleRatingChange(rubric, star)}
-                  >
-                    ★
-                  </button>
-                ))}
+        <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
+          <div className="flex flex-col justify-center items-center space-y-4">
+            {RUBRICS.map((rubric: keyof Ratings) => (
+              <div key={rubric} className="w-full text-center">
+                <h4 className="font-medium text-lg capitalize">{rubric}</h4>
+                <div className="flex justify-center space-x-2">
+                  {Array.from({ length: 5 }, (_, i) => i + 1).map((star) => (
+                    <button
+                      key={star}
+                      className={`cursor-pointer text-lg ${
+                        ratings &&
+                        (ratings[rubric as keyof Ratings] || 0) >= star
+                          ? "text-yellow-500"
+                          : "text-gray-300"
+                      }`}
+                      onClick={() => handleRatingChange(rubric, star)}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <div className="flex flex-col items-center space-y-6">
-          <a href={resume.link} target="_blank" rel="noopener noreferrer">
+          <div className="flex flex-col items-center space-y-6">
             <iframe
               src={`https://docs.google.com/viewer?url=${encodeURIComponent(
                 resume.link
               )}&embedded=true`}
-              className="mb-4 border rounded-lg w-full h-80 object-cover"
-              style={{ maxHeight: "1000px" }}
+              className="border rounded-lg w-full h-full min-h-80 object-cover"
             />
-          </a>
-          <div className="flex flex-row space-x-4">
-            <a
-              href={resume.link}
-              target="_blank"
-              className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
-            >
-              Full PDF
-            </a>
-            <button
-              className={`bg-blue-500 text-white py-2 px-6 rounded-lg ${
-                Object.keys(ratings).length === RUBRICS.length
-                  ? "cursor-pointer"
-                  : "opacity-50 cursor-not-allowed"
-              }`}
-              onClick={handleRatingSubmit}
-              disabled={
-                Object.keys(ratings).length !== RUBRICS.length || submitting
-              }
-            >
-              {submitting ? "Submitting..." : "Submit"}
-            </button>
           </div>
+        </div>
+
+        <div className="flex flex-col items-stretch md:px-4 w-full">
+          <h4 className="mb-2 px-1 font-medium text-lg">Comments</h4>
+          <textarea
+            className="p-2 border rounded-lg min-h-32 resize-y"
+            placeholder="Write your comments here..."
+            value={comments}
+            onChange={(e) => setComments(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-row space-x-4">
+          <a
+            href={resume.link}
+            target="_blank"
+            className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
+          >
+            Open PDF in new tab
+          </a>
+          <button
+            className={`bg-blue-500 text-white py-2 px-6 rounded-lg ${
+              Object.keys(ratings).length === RUBRICS.length && comments
+                ? "cursor-pointer"
+                : "opacity-50 cursor-not-allowed"
+            }`}
+            onClick={handleRatingSubmit}
+            disabled={
+              Object.keys(ratings).length !== RUBRICS.length ||
+              !comments ||
+              submitting
+            }
+          >
+            {submitting ? "Submitting..." : "Submit"}
+          </button>
         </div>
       </div>
     )

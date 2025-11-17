@@ -17,6 +17,7 @@ interface ReviewStats {
   _count: {
     id: number;
   };
+  comments: string[];
   resumeLink: string;
   reviewCount: number;
 }
@@ -25,55 +26,69 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
   return (
     <div
       className={`${
-        self ? "border-black border-4" : "border"
-      } px-4 py-8 rounded-lg shadow-md bg-white grid grid-cols-1 xl:grid-cols-2 gap-4`}
+        self ? "border-blue-400 border-4" : "border"
+      } px-4 py-8 rounded-xl shadow-md bg-white`}
     >
-      <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0">
-        {Object.keys(r._avg).map((k, i) => {
-          const calc = r._avg[k as keyof ReviewStats["_avg"]];
-          const calc_p = calc * 20;
-          return (
-            <div key={i} className="space-y-4 w-[80%] text-center">
-              <h4 className="font-medium text-lg">{`${
-                k.charAt(0).toUpperCase() + k.slice(1)
-              }: ${calc.toPrecision(2)} / 5`}</h4>
-              <div className="bg-gray-300 rounded-full w-full h-2.5">
-                <div
-                  className={`${
-                    calc > 4
-                      ? "bg-green-600"
-                      : calc > 2.5
-                      ? "bg-yellow-500"
-                      : "bg-red-600"
-                  }  h-2.5 rounded-full`}
-                  style={{ width: `${calc_p}%` }}
-                />
+      <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
+        <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0">
+          {Object.keys(r._avg).map((k, i) => {
+            const calc = r._avg[k as keyof ReviewStats["_avg"]];
+            const calc_p = calc * 20;
+            return (
+              <div key={i} className="space-y-4 w-[80%] text-center">
+                <h4 className="font-medium text-lg">{`${
+                  k.charAt(0).toUpperCase() + k.slice(1)
+                }: ${calc.toPrecision(2)} / 5`}</h4>
+                <div className="bg-gray-300 rounded-full w-full h-2.5">
+                  <div
+                    className={`${
+                      calc > 4
+                        ? "bg-green-600"
+                        : calc > 2.5
+                        ? "bg-yellow-500"
+                        : "bg-red-600"
+                    }  h-2.5 rounded-full`}
+                    style={{ width: `${calc_p}%` }}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        <div className="flex flex-col items-center space-y-4">
+          <a href={r.resumeLink} target="_blank" rel="noopener noreferrer">
+            <iframe
+              src={`https://docs.google.com/viewer?url=${encodeURIComponent(
+                r.resumeLink
+              )}&embedded=true`}
+              className="border rounded-lg w-full h-full min-h-80 object-cover"
+            />
+          </a>
+          <div className="flex flex-row space-x-2">
+            <a
+              href={r.resumeLink}
+              target="_blank"
+              className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
+            >
+              Open PDF in new tab
+            </a>
+          </div>
+          <h4 className="font-medium text-lg">Total Ratings: {r._count.id}</h4>
+        </div>
       </div>
 
-      <div className="flex flex-col items-center space-y-4">
-        <a href={r.resumeLink} target="_blank" rel="noopener noreferrer">
-          <iframe
-            src={`https://docs.google.com/viewer?url=${encodeURIComponent(
-              r.resumeLink
-            )}&embedded=true`}
-            className="mb-2 border rounded-lg w-full h-80"
-            frameBorder="0"
-            style={{ maxHeight: "1000px", objectFit: "cover" }}
-          />
-        </a>
-        <h4 className="font-medium text-lg">Total Ratings: {r._count.id}</h4>
-        <div className="flex flex-row space-x-2">
-          <a
-            href={r.resumeLink}
-            target="_blank"
-            className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
-          >
-            Full PDF
-          </a>
+      <div className="flex flex-col items-stretch gap-2 mt-4 md:px-4 w-full">
+        <h4 className="font-medium text-lg">Comments</h4>
+        <div className="space-y-2">
+          {r.comments.map((c, i) => (
+            <p
+              key={i}
+              className="bg-gray-100 px-4 py-2 rounded-xl rounded-tl-none"
+            >
+              {c}
+            </p>
+          ))}
         </div>
       </div>
     </div>

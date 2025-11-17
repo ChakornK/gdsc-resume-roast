@@ -3,7 +3,7 @@ import prisma from "@/lib/db";
 
 export async function GET(_: NextRequest) {
   try {
-    const reviews = await prisma.review.groupBy({
+    const aggregatedReviews = await prisma.review.groupBy({
       by: ["resumeId"],
       _avg: {
         structure: true,
@@ -19,14 +19,19 @@ export async function GET(_: NextRequest) {
         resumeId: "asc",
       },
     });
+    const reviews = await prisma.review.findMany({});
 
     const resumes = await prisma.resume.findMany({});
 
-    const res = reviews.map((r) => {
+    const res = aggregatedReviews.map((r) => {
       const resume = resumes.find((resume) => resume.id == r.resumeId);
+      const comments = reviews
+        .filter((review) => review.resumeId == r.resumeId)
+        .map((review) => review.comments);
       return {
         ...r,
         resumeLink: resume?.link,
+        comments,
       };
     });
 

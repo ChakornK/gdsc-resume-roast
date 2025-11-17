@@ -17,9 +17,10 @@ model Review {
   id              Int    @id @default(autoincrement())
   formatting      Int 
   relevance       Int
-  structure  Int 
+  structure       Int 
   clarity         Int
   wording         Int
+  comments        String
   resumeId        Int
   resume          Resume @relation(fields: [resumeId], references: [id])
 }
