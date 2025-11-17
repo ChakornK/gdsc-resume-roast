@@ -84,7 +84,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
           {r.comments.map((c, i) => (
             <p
               key={i}
-              className="bg-gray-100 px-4 py-2 rounded-xl rounded-tl-none"
+              className="bg-gray-100 px-4 py-2 rounded-xl rounded-tl-none wrap-break-word"
             >
               {c}
             </p>
