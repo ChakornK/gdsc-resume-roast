@@ -5,30 +5,31 @@ import { useGlobal } from "@/hooks/useGlobal";
 import { Resume } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
-const MINIMAL_RESUMES_TO_RATE = 5;
-const RUBRICS = ["formatting", "relevance", "structure", "clarity", "wording"];
+import { useCallback, useEffect, useState } from "react";
 
 interface Ratings {
-  [resumeId: number]: {
-    formatting: number;
-    relevance: number;
-    structure: number;
-    clarity: number;
-    wording: number;
-  };
+  formatting: number;
+  relevance: number;
+  structure: number;
+  clarity: number;
+  wording: number;
 }
+
+const MINIMAL_RESUMES_TO_RATE = 5;
+const RUBRICS = [
+  "formatting",
+  "relevance",
+  "structure",
+  "clarity",
+  "wording",
+] as (keyof Ratings)[];
 
 export default function Rate() {
   const { resumeUploaded } = useGlobal();
   const [resumes, setResumes] = useState<Resume[]>([]);
-  const [ratings, setRatings] = useState<Ratings>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [rated, setRated] = useState<number>(0);
-  const [submitting, setSubmitting] = useState<{ [resumeId: number]: boolean }>(
-    {}
-  );
+
   const router = useRouter();
 
   useEffect(() => {
@@ -50,57 +51,18 @@ export default function Rate() {
     }
   }, [resumeUploaded, router]);
 
-  const handleRatingChange = (
-    resumeId: number,
-    rubric: string,
-    value: number
-  ) => {
-    setRatings((prevRatings) => ({
-      ...prevRatings,
-      [resumeId]: {
-        ...prevRatings[resumeId],
-        [rubric]: value,
-      },
-    }));
-  };
-
-  const handleSubmitReview = async (resumeId: number) => {
-    setSubmitting((prevSubmitting) => ({
-      ...prevSubmitting,
-      [resumeId]: true,
-    }));
-    try {
-      const review = ratings[resumeId];
-      await axios.post("/api/review/new", {
-        resumeId,
-        formatting: review.formatting,
-        relevance: review.relevance,
-        clarity: review.clarity,
-        structure: review.structure,
-        wording: review.wording,
-      });
-      setResumes((resumes) => resumes.filter((r) => r.id !== resumeId));
-      setRated((r) => r + 1);
-    } catch (error) {
-      alert("Failed to submit review");
-    } finally {
-      setSubmitting((prevSubmitting) => ({
-        ...prevSubmitting,
-        [resumeId]: false,
-      }));
-    }
-  };
-
   return (
     <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
         Rate others' resumes!
       </div>
 
-      {rated < MINIMAL_RESUMES_TO_RATE ? (
+      {rated < Math.min(resumes.length, MINIMAL_RESUMES_TO_RATE) ? (
         <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
           You have to rate{" "}
-          <span className="font-bold">{MINIMAL_RESUMES_TO_RATE - rated}</span>{" "}
+          <span className="font-bold">
+            {Math.min(resumes.length, MINIMAL_RESUMES_TO_RATE) - rated}
+          </span>{" "}
           more resumes before proceeding.
         </div>
       ) : (
@@ -118,81 +80,119 @@ export default function Rate() {
       ) : (
         <div className="gap-8 grid grid-cols-1 xl:grid-cols-2">
           {resumes.map((resume) => (
-            <div
+            <RateResumeCard
               key={resume.id}
-              className="gap-4 grid grid-cols-1 xl:grid-cols-2 bg-white shadow-md px-4 py-8 border rounded-lg"
-            >
-              <div className="flex flex-col justify-center items-center space-y-6">
-                {RUBRICS.map((rubric) => (
-                  <div key={rubric} className="w-full text-center">
-                    <h4 className="mb-2 font-medium text-lg">
-                      {rubric.charAt(0).toUpperCase() + rubric.slice(1)}
-                    </h4>
-                    <div className="flex justify-center space-x-2">
-                      {Array.from({ length: 5 }, (_, i) => i + 1).map(
-                        (star) => (
-                          <button
-                            key={star}
-                            className={`${
-                              ratings[resume.id] &&
-                              ratings[resume.id][
-                                rubric as keyof Ratings[typeof resume.id]
-                              ] >= star
-                                ? "text-yellow-500"
-                                : "text-gray-500"
-                            }`}
-                            onClick={() =>
-                              handleRatingChange(resume.id, rubric, star)
-                            }
-                          >
-                            ★
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col items-center space-y-6">
-                <a href={resume.link} target="_blank" rel="noopener noreferrer">
-                  <iframe
-                    src={`https://docs.google.com/viewer?url=${encodeURIComponent(
-                      resume.link
-                    )}&embedded=true`}
-                    className="mb-4 border rounded-lg w-full h-80"
-                    frameBorder="0"
-                    style={{ maxHeight: "1000px", objectFit: "cover" }}
-                  />
-                </a>
-                <div className="flex flex-row space-x-4">
-                  <a
-                    href={resume.link}
-                    target="_blank"
-                    className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
-                  >
-                    Full PDF
-                  </a>
-                  <button
-                    className={`bg-blue-500 text-white py-2 px-6 rounded-lg ${
-                      Object.keys(ratings[resume.id] || {}).length === 5
-                        ? ""
-                        : "opacity-50 cursor-not-allowed"
-                    }`}
-                    onClick={() => handleSubmitReview(resume.id)}
-                    disabled={
-                      Object.keys(ratings[resume.id] || {}).length !== 5 ||
-                      submitting[resume.id]
-                    }
-                  >
-                    {submitting[resume.id] ? "Submitting..." : "Submit"}
-                  </button>
-                </div>
-              </div>
-            </div>
+              resume={resume}
+              onRatingSubmitted={() => setRated((r) => r + 1)}
+            />
           ))}
         </div>
       )}
     </main>
+  );
+}
+
+function RateResumeCard({
+  resume,
+  onRatingSubmitted,
+}: {
+  resume: Resume;
+  onRatingSubmitted: () => void;
+}) {
+  const [visible, setVisible] = useState<boolean>(true);
+  const [ratings, setRatings] = useState<Partial<Ratings>>({});
+  const [submitting, setSubmitting] = useState<boolean>(false);
+
+  const handleRatingChange = useCallback(
+    (rubric: keyof Ratings, value: number) => {
+      setRatings({
+        ...ratings,
+        [rubric]: value,
+      });
+    },
+    [ratings]
+  );
+
+  const handleRatingSubmit = useCallback(async () => {
+    if (Object.keys(ratings).length < RUBRICS.length);
+    setSubmitting(true);
+    try {
+      await axios.post("/api/review/new", {
+        resumeId: resume.id,
+        ...ratings,
+      });
+      setVisible(false);
+      onRatingSubmitted();
+    } catch {
+      alert("Failed to submit review");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [ratings]);
+
+  return (
+    visible && (
+      <div
+        key={resume.id}
+        className="gap-4 grid grid-cols-1 md:grid-cols-2 bg-white shadow-md px-4 py-8 border rounded-lg"
+      >
+        <div className="flex flex-col justify-center items-center space-y-6">
+          {RUBRICS.map((rubric: keyof Ratings) => (
+            <div key={rubric} className="w-full text-center">
+              <h4 className="font-medium text-lg capitalize">{rubric}</h4>
+              <div className="flex justify-center space-x-2">
+                {Array.from({ length: 5 }, (_, i) => i + 1).map((star) => (
+                  <button
+                    key={star}
+                    className={`cursor-pointer text-lg ${
+                      ratings && (ratings[rubric as keyof Ratings] || 0) >= star
+                        ? "text-yellow-500"
+                        : "text-gray-300"
+                    }`}
+                    onClick={() => handleRatingChange(rubric, star)}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col items-center space-y-6">
+          <a href={resume.link} target="_blank" rel="noopener noreferrer">
+            <iframe
+              src={`https://docs.google.com/viewer?url=${encodeURIComponent(
+                resume.link
+              )}&embedded=true`}
+              className="mb-4 border rounded-lg w-full h-80 object-cover"
+              style={{ maxHeight: "1000px" }}
+            />
+          </a>
+          <div className="flex flex-row space-x-4">
+            <a
+              href={resume.link}
+              target="_blank"
+              className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
+            >
+              Full PDF
+            </a>
+            <button
+              className={`bg-blue-500 text-white py-2 px-6 rounded-lg ${
+                Object.keys(ratings).length === RUBRICS.length
+                  ? "cursor-pointer"
+                  : "opacity-50 cursor-not-allowed"
+              }`}
+              onClick={handleRatingSubmit}
+              disabled={
+                Object.keys(ratings).length !== RUBRICS.length || submitting
+              }
+            >
+              {submitting ? "Submitting..." : "Submit"}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   );
 }

@@ -76,10 +76,10 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
+    <main className="flex flex-col justify-center items-center bg-linear-to-br from-neutral-100 to-neutral-200 p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
         {resumeUploaded
-          ? "Thank you for Uploading!"
+          ? "Thank you for uploading!"
           : "Upload your resume here!"}
       </div>
 
@@ -91,7 +91,7 @@ export default function Home() {
           onClick={() => (window.location.href = "/rate")}
           className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 px-6 py-2 rounded-lg text-white text-lg md:text-xl"
         >
-          Rate Others!
+          Rate other resumes!
         </button>
       ) : (
         <div
@@ -112,7 +112,7 @@ export default function Home() {
               onChange={handleFileChange}
             />
             <span className="flex justify-center items-center px-6 w-full max-w-full text-gray-500 text-xs md:text-lg text-center">
-              {file ? file.name : "Drag & Drop your PDF resume here"}
+              {file ? file.name : "Drag & drop your PDF resume here"}
             </span>
           </label>
         </div>
