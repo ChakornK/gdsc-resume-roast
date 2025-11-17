@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
@@ -27,12 +27,12 @@
 }
 
 @font-face {
-    font-family: 'google';
-    src: url('/google.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "google";
+  src: url("/google.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 body {
-font-family: 'google', sans-serif;
+  font-family: "google", sans-serif;
 }

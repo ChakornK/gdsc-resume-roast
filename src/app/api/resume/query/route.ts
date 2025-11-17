@@ -6,19 +6,19 @@ export async function POST(request: NextRequest) {
     const { id } = await request.json();
 
     const resumes = await prisma.resume.findMany({
-        where: {
-          NOT: {
-            id: id,
+      where: {
+        NOT: {
+          id: id,
+        },
+      },
+      orderBy: [
+        {
+          reviews: {
+            _count: "asc",
           },
         },
-        orderBy: [
-          {
-            reviews: {
-              _count: 'asc'
-            }
-          }
-        ],
-      });
+      ],
+    });
 
     return NextResponse.json(resumes);
   } catch (e) {
