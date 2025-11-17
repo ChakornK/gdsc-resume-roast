@@ -42,9 +42,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
       setRatingUploaded(JSON.parse(storedRatingUploaded));
     }
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 4000);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -73,9 +71,14 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
         </div>
         <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
           We apologize for the inconvenience, please try again later!
-        </div>{" "}
-        :
-        <Image src={"/icon.png"} alt="GDSC" width={200} height={200} />
+        </div>
+        <Image
+          src={"/logo.svg"}
+          alt="GDSC"
+          width={200}
+          height={200}
+          className="aspect-square"
+        />
       </main>
     );
   }

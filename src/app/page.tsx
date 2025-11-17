@@ -83,7 +83,13 @@ export default function Home() {
           : "Upload your resume here!"}
       </div>
 
-      <Image src={"/icon.png"} alt="GDSC" width={200} height={200} />
+      <Image
+        src={"/logo.svg"}
+        alt="GDSC"
+        width={200}
+        height={200}
+        className="aspect-square"
+      />
 
       {resumeUploaded ? (
         <button

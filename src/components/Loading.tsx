@@ -1,9 +1,14 @@
-import Image from "next/image";
+import "./Loading.css";
 
 export default function Loading() {
   return (
-    <>
-      <Image src={"/loading.gif"} alt="GDSC" width={300} height={300} />
-    </>
+    <div className="gdsc-loading">
+      <div className="bounce">
+        <div className="loader-bounce bounce-blue"></div>
+        <div className="loader-bounce bounce-red"></div>
+        <div className="loader-bounce bounce-yellow"></div>
+        <div className="loader-bounce bounce-green"></div>
+      </div>
+    </div>
   );
 }
