@@ -30,7 +30,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
                 <h4 className="font-medium text-lg">{`${
                   k.charAt(0).toUpperCase() + k.slice(1)
                 }: ${calc.toPrecision(2)} / 5`}</h4>
-                <div className="bg-gray-300 rounded-full w-full h-2.5">
+                <div className="bg-gray-300 m-auto rounded-full w-full max-w-xs h-2.5">
                   <div
                     className="rounded-full h-2.5"
                     style={{
@@ -146,7 +146,7 @@ export default function Stats() {
       {loading ? (
         <Loading />
       ) : (
-        <div className="gap-8 grid grid-cols-1 lg:grid-cols-2">
+        <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
           {selfResume && <ReviewStatCard key={0} r={selfResume} self={true} />}
           {reviewStats
             ?.filter((r) => r.resumeId != resumeUploaded)
