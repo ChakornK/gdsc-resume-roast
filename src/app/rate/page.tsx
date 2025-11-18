@@ -88,7 +88,7 @@ export default function Rate() {
       {loading ? (
         <Loading />
       ) : rawResumeNum < MINIMAL_RESUMES_TO_RATE ? null : (
-        <div className="gap-8 grid grid-cols-1 xl:grid-cols-2">
+        <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
           {resumes.map((resume) => (
             <RateResumeCard
               key={resume.link}
@@ -152,8 +152,8 @@ function RateResumeCard({
         key={resume.link}
         className="flex flex-col items-center gap-4 bg-white shadow-md px-4 py-8 border rounded-xl gap"
       >
-        <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
-          <div className="flex flex-col justify-center items-center space-y-4">
+        <div className="flex sm:flex-row flex-col gap-4">
+          <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0 sm:w-2/5 shrink-0">
             {RUBRICS.map((rubric: keyof Ratings) => (
               <div key={rubric} className="w-full text-center">
                 <h4 className="font-medium text-lg capitalize">{rubric}</h4>
@@ -177,7 +177,7 @@ function RateResumeCard({
             ))}
           </div>
 
-          <div className="flex flex-col items-center space-y-6">
+          <div className="flex flex-col items-center w-full min-w-3xs">
             <iframe
               src={resume.link}
               className="border rounded-lg w-full h-full min-h-80 object-cover"

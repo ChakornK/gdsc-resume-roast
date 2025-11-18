@@ -16,13 +16,13 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
         self ? "border-blue-400 border-4" : "border"
       } px-4 py-8 rounded-xl shadow-md bg-white`}
     >
-      <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
-        <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0">
+      <div className="flex sm:flex-row flex-col gap-4">
+        <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0 sm:w-2/5 shrink-0">
           {Object.keys(r._avg).map((k, i) => {
             const calc = r._avg[k as keyof ReviewStats["_avg"]];
             const calc_p = calc * 20;
             return (
-              <div key={i} className="space-y-4 w-[80%] text-center">
+              <div key={i} className="space-y-2 w-full text-center">
                 <h4 className="font-medium text-lg">{`${
                   k.charAt(0).toUpperCase() + k.slice(1)
                 }: ${calc.toPrecision(2)} / 5`}</h4>
@@ -41,9 +41,10 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
               </div>
             );
           })}
+          <h4 className="font-medium text-lg">Total Ratings: {r._count.id}</h4>
         </div>
 
-        <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col items-center space-y-4 w-full min-w-3xs">
           <iframe
             src={r.resumeLink}
             className="border rounded-lg w-full h-full min-h-80 object-cover"
@@ -76,7 +77,6 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
               {generatingPdf ? "Generating PDF..." : "Download summary"}
             </button>
           </div>
-          <h4 className="font-medium text-lg">Total Ratings: {r._count.id}</h4>
         </div>
       </div>
 
@@ -142,7 +142,7 @@ export default function Stats() {
       {loading ? (
         <Loading />
       ) : (
-        <div className="gap-8 grid grid-cols-1 xl:grid-cols-2">
+        <div className="gap-8 grid grid-cols-1 lg:grid-cols-2">
           {selfResume && <ReviewStatCard key={0} r={selfResume} self={true} />}
           {reviewStats
             ?.filter((r) => r.resumeId != resumeUploaded)
