@@ -29,9 +29,6 @@ export default function Rate() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [rated, setRated] = useState<number>(0);
-  const [resumesAvailToRate, setResumesAvailToRate] = useState<number>(
-    MINIMAL_RESUMES_TO_RATE
-  );
 
   const router = useRouter();
 
@@ -56,21 +53,22 @@ export default function Rate() {
     }
   }, [resumeUploaded, router]);
 
-  useEffect(() => {
-    setResumesAvailToRate(Math.min(resumes.length, MINIMAL_RESUMES_TO_RATE));
-  }, [resumes]);
-
   return (
     <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
         Rate others' resumes!
       </div>
 
-      {rated < resumesAvailToRate ? (
+      {resumes.length < MINIMAL_RESUMES_TO_RATE ? (
+        <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
+          Please wait until more resumes are available.
+        </div>
+      ) : rated < MINIMAL_RESUMES_TO_RATE ? (
         <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
           You have to rate{" "}
-          <span className="font-bold">{resumesAvailToRate - rated}</span> more
-          resume{resumesAvailToRate - rated == 1 ? "" : "s"} before proceeding.
+          <span className="font-bold">{MINIMAL_RESUMES_TO_RATE - rated}</span>{" "}
+          more resume{MINIMAL_RESUMES_TO_RATE - rated == 1 ? "" : "s"} before
+          proceeding.
         </div>
       ) : (
         <button
@@ -84,7 +82,7 @@ export default function Rate() {
 
       {loading ? (
         <Loading />
-      ) : (
+      ) : resumes.length < MINIMAL_RESUMES_TO_RATE ? null : (
         <div className="gap-8 grid grid-cols-1 xl:grid-cols-2">
           {resumes.map((resume) => (
             <RateResumeCard

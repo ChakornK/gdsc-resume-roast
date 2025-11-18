@@ -9,12 +9,14 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [fileOverArea, setFileOverArea] = useState<boolean>(false);
 
   const { resumeUploaded, setResumeUploaded } = useGlobal();
 
   const router = useRouter();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setFileOverArea(false);
     if (event.target.files && event.target.files.length > 0) {
       const selectedFile = event.target.files[0];
       if (selectedFile.type !== "application/pdf") {
@@ -30,11 +32,19 @@ export default function Home() {
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
+    setFileOverArea(true);
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setFileOverArea(false);
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
+    setFileOverArea(false);
 
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
       const selectedFile = event.dataTransfer.files[0];
@@ -94,7 +104,7 @@ export default function Home() {
       {resumeUploaded ? (
         <button
           type="button"
-          onClick={() => (window.location.href = "/rate")}
+          onClick={() => router.push("/rate")}
           className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 px-6 py-2 rounded-lg text-white text-lg md:text-xl"
         >
           Rate other resumes!
@@ -104,10 +114,15 @@ export default function Home() {
           className="flex justify-center items-center mb-6 w-3/4"
           onDragOver={handleDragOver}
           onDrop={handleDrop}
+          onDragExit={handleDragLeave}
         >
           <label
             htmlFor="dropzone-file"
-            className="flex flex-col justify-center items-center bg-gray-50 border-2 border-gray-300 hover:border-gray-500 border-dashed rounded-lg w-full h-64 cursor-pointer"
+            className={`flex flex-col justify-center items-center border-2 hover:border-gray-500 border-dashed rounded-lg w-full h-64 cursor-pointer ${
+              fileOverArea
+                ? "bg-blue-200 border-blue-300"
+                : "bg-gray-50 border-gray-300"
+            }`}
           >
             <input
               disabled={file != null}
