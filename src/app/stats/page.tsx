@@ -2,28 +2,14 @@
 
 import Loading from "@/components/Loading";
 import { useGlobal } from "@/hooks/useGlobal";
+import { generatePDF } from "@/lib/pdf";
+import { ReviewStats } from "@/lib/types";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-interface ReviewStats {
-  resumeId: number;
-  _avg: {
-    structure: number;
-    clarity: number;
-    formatting: number;
-    relevance: number;
-    wording: number;
-  };
-  _count: {
-    id: number;
-  };
-  comments: string[];
-  resumeLink: string;
-  reviewCount: number;
-  self: boolean;
-}
-
 const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+
   return (
     <div
       className={`${
@@ -63,13 +49,32 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
             className="border rounded-lg w-full h-full min-h-80 object-cover"
           />
           <div className="flex flex-row space-x-2">
-            <a
-              href={r.resumeLink}
-              target="_blank"
+            <button
+              onClick={() => window.open(r.resumeLink)}
               className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
             >
               Open PDF in new tab
-            </a>
+            </button>
+            <button
+              onClick={() => {
+                (async () => {
+                  setGeneratingPdf(true);
+                  try {
+                    const url = await generatePDF(r);
+                    window.open(url);
+                  } catch {}
+                  setGeneratingPdf(false);
+                })();
+              }}
+              className={`bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center ${
+                generatingPdf
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+              disabled={generatingPdf}
+            >
+              {generatingPdf ? "Generating PDF..." : "Download summary"}
+            </button>
           </div>
           <h4 className="font-medium text-lg">Total Ratings: {r._count.id}</h4>
         </div>
