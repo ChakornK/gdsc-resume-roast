@@ -27,8 +27,9 @@ const RUBRICS = [
 export default function Rate() {
   const { resumeUploaded, resumesRated } = useGlobal();
   const [resumes, setResumes] = useState<Resume[]>([]);
+  const [rawResumeNum, setRawResumeNum] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
-  const [rated, setRated] = useState<number>(0);
+  const [rated, setRated] = useState<number>(resumesRated.length);
 
   const router = useRouter();
 
@@ -42,6 +43,7 @@ export default function Rate() {
           const res = await axios.post("/api/resume/query", {
             id: resumeUploaded,
           });
+          setRawResumeNum(res.data.length);
           setResumes(
             res.data.filter((r: Resume) => !resumesRated.includes(r.id))
           );
@@ -59,7 +61,7 @@ export default function Rate() {
         Rate others' resumes!
       </div>
 
-      {resumes.length < MINIMAL_RESUMES_TO_RATE ? (
+      {rawResumeNum < MINIMAL_RESUMES_TO_RATE ? (
         <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
           Please wait until more resumes are available.
         </div>
@@ -67,8 +69,11 @@ export default function Rate() {
         <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
           You have to rate{" "}
           <span className="font-bold">{MINIMAL_RESUMES_TO_RATE - rated}</span>{" "}
-          more resume{MINIMAL_RESUMES_TO_RATE - rated == 1 ? "" : "s"} before
-          proceeding.
+          more resume
+          {Math.min(MINIMAL_RESUMES_TO_RATE, resumes.length) - rated == 1
+            ? ""
+            : "s"}{" "}
+          before proceeding.
         </div>
       ) : (
         <button
@@ -82,7 +87,7 @@ export default function Rate() {
 
       {loading ? (
         <Loading />
-      ) : resumes.length < MINIMAL_RESUMES_TO_RATE ? null : (
+      ) : rawResumeNum < MINIMAL_RESUMES_TO_RATE ? null : (
         <div className="gap-8 grid grid-cols-1 xl:grid-cols-2">
           {resumes.map((resume) => (
             <RateResumeCard
