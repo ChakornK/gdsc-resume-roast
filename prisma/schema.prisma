@@ -8,19 +8,19 @@ datasource db {
 }
 
 model Resume {
-  id        Int     @id @default(autoincrement())
-  link      String
-  reviews   Review[]
+  id      String   @id @default(cuid())
+  link    String
+  reviews Review[]
 }
 
 model Review {
-  id              Int    @id @default(autoincrement())
-  formatting      Int 
-  relevance       Int
-  structure       Int 
-  clarity         Int
-  wording         Int
-  comments        String
-  resumeId        Int
-  resume          Resume @relation(fields: [resumeId], references: [id])
+  id         String @id @default(cuid())
+  formatting Int
+  relevance  Int
+  structure  Int
+  clarity    Int
+  wording    Int
+  comments   String
+  resumeId   String
+  resume     Resume @relation(fields: [resumeId], references: [id])
 }
