@@ -58,7 +58,7 @@ export default function Rate() {
   return (
     <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
-        Rate others' resumes!
+        Rate other resumes!
       </div>
 
       {rawResumeNum < MINIMAL_RESUMES_TO_RATE ? (
