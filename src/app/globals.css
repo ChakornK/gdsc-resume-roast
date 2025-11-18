@@ -1,5 +1,38 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #6750a4;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #eaddff;
+  --color-on-primary-container: #21005d;
+
+  --color-secondary: #625b71;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e8def8;
+  --color-on-secondary-container: #1d192b;
+
+  --color-tertiary: #7d5260;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #ffd8e4;
+  --color-on-tertiary-container: #31111d;
+
+  --color-error: #b3261e;
+  --color-on-error: #ffffff;
+  --color-error-container: #f9dedc;
+  --color-on-error-container: #410e0b;
+
+  --color-surface: #fffbfe;
+  --color-on-surface: #1c1b1f;
+  --color-surface-variant: #e7e0ec;
+  --color-on-surface-variant: #49454f;
+
+  --color-outline: #79747e;
+  --color-outline-variant: #cac4d0;
+
+  --color-background: #fbf6fe;
+  --color-on-background: #1c1b1f;
+}
+
 @font-face {
   font-family: "google";
   src: url("/google.ttf") format("truetype");
@@ -7,16 +40,20 @@
   font-style: normal;
 }
 
+html {
+  @apply bg-background;
+}
+
 body {
   font-family: "google", sans-serif;
 }
 
 .btn {
-  @apply disabled:opacity-50 px-6 py-2 rounded-lg text-white text-center cursor-pointer disabled:cursor-not-allowed;
+  @apply flex justify-center items-center gap-1.5 disabled:opacity-50 not-disabled:hover:brightness-95 px-[1em] py-[0.5em] rounded-full text-center cursor-pointer disabled:cursor-not-allowed;
 }
 .primary-btn {
-  @apply bg-blue-500 hover:bg-blue-600;
+  @apply bg-primary-container text-on-primary-container;
 }
 .critical-btn {
-  @apply bg-red-500 hover:bg-red-600;
+  @apply bg-error-container text-on-error-container;
 }

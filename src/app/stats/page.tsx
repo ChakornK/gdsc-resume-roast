@@ -7,6 +7,8 @@ import { ReviewStats } from "@/lib/types";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Icon from "@mdi/react";
+import { mdiOpenInNew, mdiTrayArrowDown } from "@mdi/js";
 
 const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
   const [generatingPdf, setGeneratingPdf] = useState(false);
@@ -14,8 +16,8 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
   return (
     <div
       className={`${
-        self ? "border-blue-400 border-4" : ""
-      } p-8 rounded-xl shadow-md bg-white`}
+        self ? "border-primary border-4" : ""
+      } p-8 rounded-3xl shadow-md bg-surface`}
     >
       <div className="flex sm:flex-row flex-col gap-4">
         <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0 sm:w-2/5 shrink-0">
@@ -29,14 +31,16 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
                 }: ${calc.toPrecision(2)} / 5`}</h4>
                 <div className="bg-gray-300 rounded-full w-full h-2.5">
                   <div
-                    className={`${
-                      calc > 4
-                        ? "bg-green-600"
-                        : calc > 2.5
-                        ? "bg-yellow-500"
-                        : "bg-red-600"
-                    }  h-2.5 rounded-full`}
-                    style={{ width: `${calc_p}%` }}
+                    className="rounded-full h-2.5"
+                    style={{
+                      width: `${calc_p}%`,
+                      background:
+                        calc > 4
+                          ? "#00bc7d"
+                          : calc > 2.5
+                          ? "#f0b100"
+                          : "#fb2c36",
+                    }}
                   />
                 </div>
               </div>
@@ -50,31 +54,36 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
             src={r.resumeLink}
             className="border rounded-lg w-full h-full min-h-80 object-cover"
           />
-          <div className="flex flex-row space-x-2">
-            <button
-              onClick={() => window.open(r.resumeLink)}
-              className="btn primary-btn"
-            >
-              Open PDF in new tab
-            </button>
-            <button
-              onClick={() => {
-                (async () => {
-                  setGeneratingPdf(true);
-                  try {
-                    const url = await generatePDF(r);
-                    window.open(url);
-                  } catch {}
-                  setGeneratingPdf(false);
-                })();
-              }}
-              className="primary-btn btn"
-              disabled={generatingPdf}
-            >
-              {generatingPdf ? "Generating PDF..." : "Download summary"}
-            </button>
-          </div>
         </div>
+      </div>
+
+      <div className="flex sm:flex-row flex-col items-stretch gap-2 mt-4">
+        <button
+          onClick={() => window.open(r.resumeLink)}
+          className="btn primary-btn grow"
+        >
+          <Icon path={mdiOpenInNew} size="1em" />
+          Open PDF in new tab
+        </button>
+        {self && (
+          <button
+            onClick={() => {
+              (async () => {
+                setGeneratingPdf(true);
+                try {
+                  const url = await generatePDF(r);
+                  window.open(url);
+                } catch {}
+                setGeneratingPdf(false);
+              })();
+            }}
+            className="btn primary-btn grow"
+            disabled={generatingPdf}
+          >
+            <Icon path={mdiTrayArrowDown} size="1em" />
+            {generatingPdf ? "Generating PDF..." : "Download summary"}
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col items-stretch gap-2 mt-4 w-full">
@@ -83,7 +92,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
           {r.comments.map((c, i) => (
             <p
               key={i}
-              className="bg-gray-100 px-4 py-2 rounded-xl rounded-tl-none wrap-break-word"
+              className="bg-gray-100 px-4 py-2 rounded-xl wrap-break-word"
             >
               {c}
             </p>
@@ -118,7 +127,7 @@ export default function Stats() {
     : null;
 
   return (
-    <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
+    <main className="flex flex-col justify-center items-center p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
         Resume Statistics
       </div>

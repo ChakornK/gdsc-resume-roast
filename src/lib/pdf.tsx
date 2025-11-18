@@ -76,7 +76,7 @@ const stylesheet = StyleSheet.create({
     borderTopLeftRadius: 0,
   },
 });
-const barColors = ["#00a63e", "#fdc700", "#e7000b"];
+const barColors = ["#00bc7d", "#f0b100", "#fb2c36"];
 
 export const generatePDF = async (resumeReviews: ReviewStats) => {
   const { structure, clarity, formatting, relevance, wording } =

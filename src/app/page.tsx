@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useGlobal } from "@/hooks/useGlobal";
 import Image from "next/image";
+import Icon from "@mdi/react";
+import { mdiArrowRight, mdiTrashCanOutline, mdiTrayArrowUp } from "@mdi/js";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -86,7 +88,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col justify-center items-center bg-linear-to-br from-neutral-100 to-neutral-200 p-8 min-h-screen">
+    <main className="flex flex-col justify-center items-center p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
         {resumeUploaded
           ? "Thank you for uploading!"
@@ -107,7 +109,8 @@ export default function Home() {
           onClick={() => router.push("/rate")}
           className="text-lg md:text-xl primary-btn btn"
         >
-          Rate other resumes!
+          Rate other resumes
+          <Icon path={mdiArrowRight} size="1em" />
         </button>
       ) : (
         <div
@@ -118,10 +121,10 @@ export default function Home() {
         >
           <label
             htmlFor="dropzone-file"
-            className={`flex flex-col justify-center items-center border-2 hover:border-gray-500 border-dashed rounded-lg w-full h-64 cursor-pointer ${
+            className={`flex flex-col justify-center items-center border-2 border-dashed rounded-xl w-full h-64 cursor-pointer ${
               fileOverArea
-                ? "bg-blue-200 border-blue-300"
-                : "bg-gray-50 border-gray-300"
+                ? "bg-primary-container border-on-primary-container"
+                : "bg-surface border-outline-variant"
             }`}
           >
             <input
@@ -132,15 +135,17 @@ export default function Home() {
               className="hidden"
               onChange={handleFileChange}
             />
-            <span className="flex justify-center items-center px-6 w-full max-w-full text-gray-500 text-xs md:text-lg text-center">
-              {file ? file.name : "Drag & drop your PDF resume here"}
+            <span className="flex justify-center items-center px-6 w-full max-w-full text-on-surface-variant text-xs md:text-lg text-center">
+              {file
+                ? file.name
+                : "Drag & drop your PDF resume here\nor click to select a file"}
             </span>
           </label>
         </div>
       )}
 
       {!resumeUploaded && error && (
-        <div className="mb-4 text-red-500">{error}</div>
+        <div className="mb-4 text-error">{error}</div>
       )}
 
       {!resumeUploaded && file && (
@@ -152,6 +157,7 @@ export default function Home() {
               disabled={loading}
               className="primary-btn btn"
             >
+              <Icon path={mdiTrayArrowUp} size="1em" />
               {loading ? "Uploading..." : "Upload"}
             </button>
             <button
@@ -160,6 +166,7 @@ export default function Home() {
               disabled={loading}
               className="btn critical-btn"
             >
+              <Icon path={mdiTrashCanOutline} size="1em" />
               Clear
             </button>
           </div>

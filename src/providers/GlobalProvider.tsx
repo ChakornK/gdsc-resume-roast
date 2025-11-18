@@ -66,7 +66,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
 
   if (loading || checkDb === null) {
     return (
-      <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
+      <main className="flex flex-col justify-center items-center p-8 min-h-screen">
         <Loading />
       </main>
     );
@@ -74,7 +74,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
 
   if (checkDb === false) {
     return (
-      <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
+      <main className="flex flex-col justify-center items-center p-8 min-h-screen">
         <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
           Service Unavailable
         </div>

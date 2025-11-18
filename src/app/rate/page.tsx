@@ -3,6 +3,13 @@
 import Loading from "@/components/Loading";
 import { useGlobal } from "@/hooks/useGlobal";
 import { ClientResume } from "@/lib/types";
+import {
+  mdiArrowRight,
+  mdiChartBoxOutline,
+  mdiOpenInNew,
+  mdiSendVariantOutline,
+} from "@mdi/js";
+import Icon from "@mdi/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -56,7 +63,7 @@ export default function Rate() {
   }, [resumeUploaded, router]);
 
   return (
-    <main className="flex flex-col justify-center items-center bg-linear-to-br from-gray-100 to-gray-200 p-8 min-h-screen">
+    <main className="flex flex-col justify-center items-center p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
         Rate other resumes!
       </div>
@@ -82,6 +89,7 @@ export default function Rate() {
           className="mb-8 text-lg md:text-xl btn primary-btn"
         >
           View stats
+          <Icon path={mdiArrowRight} size="1em" />
         </button>
       )}
 
@@ -112,6 +120,7 @@ function RateResumeCard({
   const [visible, setVisible] = useState<boolean>(true);
   const [ratings, setRatings] = useState<Partial<Ratings>>({});
   const [comments, setComments] = useState<string>("");
+  const [commentBoxHasFocus, setCommentBoxHasFocus] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const { resumesRated, setResumesRated } = useGlobal();
@@ -150,7 +159,7 @@ function RateResumeCard({
     visible && (
       <div
         key={resume.link}
-        className="flex flex-col items-center gap-4 bg-white shadow-md p-8 rounded-xl gap"
+        className="flex flex-col items-center gap-4 bg-surface shadow-md p-8 rounded-3xl gap"
       >
         <div className="flex sm:flex-row flex-col gap-4 w-full">
           <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0 sm:w-2/5 shrink-0">
@@ -185,13 +194,40 @@ function RateResumeCard({
           </div>
         </div>
 
-        <div className="flex flex-col items-stretch w-full">
-          <h4 className="mb-2 px-1 font-medium text-lg">Comments</h4>
+        <div className="relative flex flex-col items-stretch w-full">
+          <div className="h-0.5"></div>
+          <p className={`absolute transition-all px-1`}>
+            <span className="-top-2.5 left-2.5 absolute w-full h-full">
+              <span
+                className={`top-0 left-1/2 absolute bg-surface h-full transition-all -translate-x-1/2 ${
+                  commentBoxHasFocus || comments.length > 0
+                    ? "w-full ease-out"
+                    : "w-0 ease-in"
+                }`}
+              ></span>
+            </span>
+            <span
+              className={`relative transition-all ${
+                commentBoxHasFocus
+                  ? "text-primary text-sm -top-2.5 left-2.5"
+                  : comments.length > 0
+                  ? "text-sm -top-2.5 left-2.5"
+                  : "text-outline-variant top-2.5 left-1.5"
+              }`}
+            >
+              Comments
+            </span>
+          </p>
           <textarea
-            className="p-2 border border-gray-300 rounded-lg min-h-32 resize-y"
-            placeholder="Write your comments here..."
+            className={`p-2 rounded outline-none min-h-32 resize-y ${
+              commentBoxHasFocus
+                ? "border-2 border-primary"
+                : "border border-outline-variant"
+            }`}
             value={comments}
             onChange={(e) => setComments(e.target.value)}
+            onFocus={() => setCommentBoxHasFocus(true)}
+            onBlur={() => setCommentBoxHasFocus(false)}
           />
         </div>
 
@@ -200,14 +236,11 @@ function RateResumeCard({
             onClick={() => window.open(resume.link)}
             className="btn primary-btn"
           >
+            <Icon path={mdiOpenInNew} size="1em" />
             Open PDF in new tab
           </button>
           <button
-            className={`bg-blue-500 text-white py-2 px-6 rounded-lg ${
-              Object.keys(ratings).length === RUBRICS.length && comments
-                ? "cursor-pointer"
-                : "opacity-50 cursor-not-allowed"
-            }`}
+            className={"btn primary-btn"}
             onClick={handleRatingSubmit}
             disabled={
               Object.keys(ratings).length !== RUBRICS.length ||
@@ -215,6 +248,7 @@ function RateResumeCard({
               submitting
             }
           >
+            <Icon path={mdiSendVariantOutline} size="1em" />
             {submitting ? "Submitting..." : "Submit"}
           </button>
         </div>
