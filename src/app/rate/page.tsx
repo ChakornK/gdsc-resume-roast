@@ -179,9 +179,7 @@ function RateResumeCard({
 
           <div className="flex flex-col items-center space-y-6">
             <iframe
-              src={`https://docs.google.com/viewer?url=${encodeURIComponent(
-                resume.link
-              )}&embedded=true`}
+              src={resume.link}
               className="border rounded-lg w-full h-full min-h-80 object-cover"
             />
           </div>
