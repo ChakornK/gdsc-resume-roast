@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import { s3 } from "@/lib/aws";
+import { s3, s3Put } from "@/lib/aws";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,11 +16,11 @@ export async function POST(request: NextRequest) {
       Body: Buffer.from(await file.arrayBuffer()),
       ContentType: file.type,
     };
-    const { Location } = await s3.upload(params).promise();
+    const location = await s3Put(params);
 
     const r = await prisma.resume.create({
       data: {
-        link: Location,
+        link: location,
       },
     });
 
