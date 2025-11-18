@@ -79,7 +79,7 @@ export default function Rate() {
         <button
           type="button"
           onClick={() => router.push("/stats")}
-          className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 mb-6 px-6 py-2 rounded-lg text-white text-lg md:text-xl"
+          className="mb-8 text-lg md:text-xl btn primary-btn"
         >
           View stats
         </button>
@@ -150,7 +150,7 @@ function RateResumeCard({
     visible && (
       <div
         key={resume.link}
-        className="flex flex-col items-center gap-4 bg-white shadow-md p-8 border rounded-xl gap"
+        className="flex flex-col items-center gap-4 bg-white shadow-md p-8 rounded-xl gap"
       >
         <div className="flex sm:flex-row flex-col gap-4 w-full">
           <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0 sm:w-2/5 shrink-0">
@@ -188,7 +188,7 @@ function RateResumeCard({
         <div className="flex flex-col items-stretch w-full">
           <h4 className="mb-2 px-1 font-medium text-lg">Comments</h4>
           <textarea
-            className="p-2 border rounded-lg min-h-32 resize-y"
+            className="p-2 border border-gray-300 rounded-lg min-h-32 resize-y"
             placeholder="Write your comments here..."
             value={comments}
             onChange={(e) => setComments(e.target.value)}
@@ -198,7 +198,7 @@ function RateResumeCard({
         <div className="flex flex-row space-x-4">
           <button
             onClick={() => window.open(resume.link)}
-            className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
+            className="btn primary-btn"
           >
             Open PDF in new tab
           </button>

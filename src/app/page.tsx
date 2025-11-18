@@ -105,7 +105,7 @@ export default function Home() {
         <button
           type="button"
           onClick={() => router.push("/rate")}
-          className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 px-6 py-2 rounded-lg text-white text-lg md:text-xl"
+          className="text-lg md:text-xl primary-btn btn"
         >
           Rate other resumes!
         </button>
@@ -150,7 +150,7 @@ export default function Home() {
               type="button"
               onClick={handleUpload}
               disabled={loading}
-              className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 px-6 py-2 rounded-lg text-white"
+              className="primary-btn btn"
             >
               {loading ? "Uploading..." : "Upload"}
             </button>
@@ -158,7 +158,7 @@ export default function Home() {
               type="button"
               onClick={() => setFile(null)}
               disabled={loading}
-              className="bg-red-500 hover:bg-red-600 disabled:bg-red-300 px-6 py-2 rounded-lg text-white"
+              className="btn critical-btn"
             >
               Clear
             </button>

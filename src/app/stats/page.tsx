@@ -14,7 +14,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
   return (
     <div
       className={`${
-        self ? "border-blue-400 border-4" : "border"
+        self ? "border-blue-400 border-4" : ""
       } p-8 rounded-xl shadow-md bg-white`}
     >
       <div className="flex sm:flex-row flex-col gap-4">
@@ -53,7 +53,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
           <div className="flex flex-row space-x-2">
             <button
               onClick={() => window.open(r.resumeLink)}
-              className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
+              className="btn primary-btn"
             >
               Open PDF in new tab
             </button>
@@ -68,11 +68,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
                   setGeneratingPdf(false);
                 })();
               }}
-              className={`bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center ${
-                generatingPdf
-                  ? "opacity-50 cursor-not-allowed"
-                  : "cursor-pointer"
-              }`}
+              className="primary-btn btn"
               disabled={generatingPdf}
             >
               {generatingPdf ? "Generating PDF..." : "Download summary"}
@@ -136,7 +132,7 @@ export default function Stats() {
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 mb-6 px-6 py-2 rounded-lg text-white text-lg md:text-xl"
+          className="mb-8 text-lg md:text-xl btn primary-btn"
         >
           Upload a resume
         </button>
