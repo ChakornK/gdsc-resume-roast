@@ -13,7 +13,7 @@ interface GlobalProviderProps {
 export default function GlobalProvider({ children }: GlobalProviderProps) {
   const [resumeUploaded, setResumeUploaded] = useState<number | null>(null);
   const [ratingUploaded, setRatingUploaded] = useState<boolean>(false);
-  const [resumesRated, setResumesRated] = useState<number[]>([]);
+  const [resumesRated, setResumesRated] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [checkDb, setCheckDb] = useState<boolean | null>(null);
 
