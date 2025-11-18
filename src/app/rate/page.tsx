@@ -67,7 +67,7 @@ export default function Rate() {
         Rate other resumes!
       </div>
 
-      {rawResumeNum < MINIMAL_RESUMES_TO_RATE ? (
+      {loading ? null : rawResumeNum < MINIMAL_RESUMES_TO_RATE ? (
         <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
           Please wait until more resumes are available.
         </div>

@@ -8,7 +8,12 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
-import { mdiOpenInNew, mdiTrayArrowDown, mdiTrayArrowUp } from "@mdi/js";
+import {
+  mdiArrowRight,
+  mdiOpenInNew,
+  mdiTrayArrowDown,
+  mdiTrayArrowUp,
+} from "@mdi/js";
 import { MINIMAL_RESUMES_TO_RATE } from "@/lib/consts";
 
 const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
@@ -136,24 +141,38 @@ export default function Stats() {
   return (
     <main className="flex flex-col justify-center items-center p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
-        Resume Statistics
+        Resume statistics
       </div>
-      <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
-        {selfResume
-          ? "The highlighted resume is yours!"
-          : "No ratings for your resume yet"}
-      </div>
+      {!loading && (
+        <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
+          {selfResume
+            ? "The highlighted resume is yours!"
+            : "No ratings for your resume yet"}
+        </div>
+      )}
       {loading ? (
         <Loading />
       ) : (
-        <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
-          {selfResume && <ReviewStatCard key={0} r={selfResume} self={true} />}
-          {reviewStats
-            ?.filter((r) => r.resumeId != resumeUploaded)
-            .map((r, i) => (
-              <ReviewStatCard key={i + 1} r={r} self={false} />
-            ))}
-        </div>
+        <>
+          <button
+            type="button"
+            onClick={() => router.push("/rate")}
+            className="mb-8 text-lg md:text-xl btn primary-btn"
+          >
+            Rate more resumes
+            <Icon path={mdiArrowRight} size="1em" />
+          </button>
+          <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
+            {selfResume && (
+              <ReviewStatCard key={0} r={selfResume} self={true} />
+            )}
+            {reviewStats
+              ?.filter((r) => r.resumeId != resumeUploaded)
+              .map((r, i) => (
+                <ReviewStatCard key={i + 1} r={r} self={false} />
+              ))}
+          </div>
+        </>
       )}
     </main>
   );
