@@ -213,13 +213,11 @@ export const generatePDF = async (resumeReviews: ReviewStats) => {
         <View style={stylesheet.line}></View>
         <View style={stylesheet.section}>
           <Text style={stylesheet.title}>{"💬  Feedback comments"}</Text>
-          {Array.from({ length: 10 }, () => resumeReviews.comments)
-            .flat()
-            .map((c, i) => (
-              <View key={i} style={stylesheet.comment} wrap={false}>
-                <Text>{c.trim()}</Text>
-              </View>
-            ))}
+          {resumeReviews.comments.map((c, i) => (
+            <View key={i} style={stylesheet.comment} wrap={false}>
+              <Text>{c.trim()}</Text>
+            </View>
+          ))}
         </View>
       </Page>
     </Document>
