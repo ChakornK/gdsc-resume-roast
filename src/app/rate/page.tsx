@@ -2,6 +2,7 @@
 
 import Loading from "@/components/Loading";
 import { useGlobal } from "@/hooks/useGlobal";
+import { MINIMAL_RESUMES_TO_RATE } from "@/lib/consts";
 import { ClientResume } from "@/lib/types";
 import {
   mdiArrowRight,
@@ -22,7 +23,6 @@ interface Ratings {
   wording: number;
 }
 
-const MINIMAL_RESUMES_TO_RATE = 5;
 const RUBRICS = [
   "formatting",
   "relevance",
@@ -44,7 +44,7 @@ export default function Rate() {
     if (!resumeUploaded) {
       router.push("/");
     } else {
-      const fetchData = async () => {
+      (async () => {
         setLoading(true);
         try {
           const res = await axios.post("/api/resume/query", {
@@ -57,8 +57,7 @@ export default function Rate() {
         } finally {
           setLoading(false);
         }
-      };
-      fetchData();
+      })();
     }
   }, [resumeUploaded, router]);
 

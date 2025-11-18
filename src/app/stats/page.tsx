@@ -8,7 +8,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
-import { mdiOpenInNew, mdiTrayArrowDown } from "@mdi/js";
+import { mdiOpenInNew, mdiTrayArrowDown, mdiTrayArrowUp } from "@mdi/js";
+import { MINIMAL_RESUMES_TO_RATE } from "@/lib/consts";
 
 const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
   const [generatingPdf, setGeneratingPdf] = useState(false);
@@ -106,22 +107,28 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
 export default function Stats() {
   const [reviewStats, setReviewStats] = useState<ReviewStats[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const { resumeUploaded } = useGlobal();
+  const { resumeUploaded, resumesRated } = useGlobal();
   const router = useRouter();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.post("/api/review/aggregate", {
-          id: resumeUploaded,
-        });
-        setReviewStats(res.data);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    if (!resumeUploaded) {
+      router.push("/");
+    } else if (resumesRated.length < MINIMAL_RESUMES_TO_RATE) {
+      router.push("/rate");
+    } else {
+      (async () => {
+        try {
+          const res = await axios.post("/api/review/aggregate", {
+            id: resumeUploaded,
+          });
+          setReviewStats(res.data);
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
   }, []);
+
   const selfResume = resumeUploaded
     ? reviewStats?.find((r) => r.self === true)
     : null;
@@ -131,21 +138,11 @@ export default function Stats() {
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
         Resume Statistics
       </div>
-      {resumeUploaded ? (
-        <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
-          {selfResume
-            ? "The highlighted resume is yours!"
-            : "No ratings for your resume yet"}
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-          className="mb-8 text-lg md:text-xl btn primary-btn"
-        >
-          Upload a resume
-        </button>
-      )}
+      <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
+        {selfResume
+          ? "The highlighted resume is yours!"
+          : "No ratings for your resume yet"}
+      </div>
       {loading ? (
         <Loading />
       ) : (
