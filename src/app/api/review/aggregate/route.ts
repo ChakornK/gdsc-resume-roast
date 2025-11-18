@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
-export async function GET(_: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
+    const { id } = await request.json();
+
     const aggregatedReviews = await prisma.review.groupBy({
       by: ["resumeId"],
       _avg: {
@@ -42,6 +44,7 @@ export async function GET(_: NextRequest) {
           ...r,
           resumeLink: resume?.link,
           comments,
+          self: r.resumeId == id,
         };
         delete processed.resumeId;
 

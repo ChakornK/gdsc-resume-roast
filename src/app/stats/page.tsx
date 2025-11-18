@@ -20,6 +20,7 @@ interface ReviewStats {
   comments: string[];
   resumeLink: string;
   reviewCount: number;
+  self: boolean;
 }
 
 const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
@@ -99,7 +100,9 @@ export default function Stats() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("/api/review/aggregate");
+        const res = await axios.post("/api/review/aggregate", {
+          id: resumeUploaded,
+        });
         setReviewStats(res.data);
       } finally {
         setLoading(false);
@@ -108,7 +111,7 @@ export default function Stats() {
     fetchData();
   }, []);
   const selfResume = resumeUploaded
-    ? reviewStats?.find((r) => r.resumeId === resumeUploaded)
+    ? reviewStats?.find((r) => r.self === true)
     : null;
 
   return (
