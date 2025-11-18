@@ -6,6 +6,7 @@ import { useGlobal } from "@/hooks/useGlobal";
 import Image from "next/image";
 import Icon from "@mdi/react";
 import { mdiArrowRight, mdiTrashCanOutline, mdiTrayArrowUp } from "@mdi/js";
+import { MAX_RESUME_SIZE_MB } from "@/lib/consts";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -17,17 +18,26 @@ export default function Home() {
 
   const router = useRouter();
 
+  const handleFile = (file: File) => {
+    console.log(file.size);
+    if (file.type !== "application/pdf") {
+      setError("Please upload a valid PDF file.");
+      setFile(null);
+    } else if (file.size > MAX_RESUME_SIZE_MB * 1024 * 1024) {
+      setError(
+        `File size exceeds the maximum allowed size of ${MAX_RESUME_SIZE_MB} MB.`
+      );
+      setFile(null);
+    } else {
+      setFile(file);
+      setError(null);
+    }
+  };
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFileOverArea(false);
     if (event.target.files && event.target.files.length > 0) {
-      const selectedFile = event.target.files[0];
-      if (selectedFile.type !== "application/pdf") {
-        setError("Please upload a valid PDF file.");
-        setFile(null);
-      } else {
-        setFile(selectedFile);
-        setError(null);
-      }
+      handleFile(event.target.files[0]);
     }
   };
 
@@ -49,14 +59,7 @@ export default function Home() {
     setFileOverArea(false);
 
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
-      const selectedFile = event.dataTransfer.files[0];
-      if (selectedFile.type !== "application/pdf") {
-        setError("Please upload a valid PDF file.");
-        setFile(null);
-      } else {
-        setFile(selectedFile);
-        setError(null);
-      }
+      handleFile(event.dataTransfer.files[0]);
     }
   };
 
@@ -136,9 +139,15 @@ export default function Home() {
               onChange={handleFileChange}
             />
             <span className="flex justify-center items-center px-6 w-full max-w-full text-on-surface-variant text-xs md:text-lg text-center">
-              {file
-                ? file.name
-                : "Drag & drop your PDF resume here\nor click to select a file"}
+              {file ? (
+                file.name
+              ) : (
+                <>
+                  Drag & drop your PDF resume here or click to select a file
+                  <br />
+                  Maximum file size: {MAX_RESUME_SIZE_MB} MB
+                </>
+              )}
             </span>
           </label>
         </div>

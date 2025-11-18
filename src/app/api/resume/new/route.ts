@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { s3, s3Put } from "@/lib/aws";
+import { MAX_RESUME_SIZE_MB } from "@/lib/consts";
 
 export async function POST(request: NextRequest) {
   try {
     const file = (await request.formData()).get("file");
     if (file instanceof File == false || file.type !== "application/pdf") {
       throw new Error("Invalid file type");
+    }
+    if (file.size > MAX_RESUME_SIZE_MB * 1024 * 1024) {
+      throw new Error(
+        `File size exceeds the maximum allowed size of ${MAX_RESUME_SIZE_MB} MB.`
+      );
     }
 
     const fileName = `${crypto.randomUUID()}-${Date.now()}.pdf`;
