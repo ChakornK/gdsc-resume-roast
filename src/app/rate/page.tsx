@@ -78,10 +78,10 @@ export default function Rate() {
       ) : (
         <button
           type="button"
-          onClick={() => (window.location.href = "/stats")}
+          onClick={() => router.push("/stats")}
           className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 mb-6 px-6 py-2 rounded-lg text-white text-lg md:text-xl"
         >
-          View Stats
+          View stats
         </button>
       )}
 
@@ -196,13 +196,12 @@ function RateResumeCard({
         </div>
 
         <div className="flex flex-row space-x-4">
-          <a
-            href={resume.link}
-            target="_blank"
+          <button
+            onClick={() => window.open(resume.link)}
             className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg text-white text-center"
           >
             Open PDF in new tab
-          </a>
+          </button>
           <button
             className={`bg-blue-500 text-white py-2 px-6 rounded-lg ${
               Object.keys(ratings).length === RUBRICS.length && comments

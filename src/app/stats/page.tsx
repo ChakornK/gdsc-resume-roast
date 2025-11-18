@@ -5,6 +5,7 @@ import { useGlobal } from "@/hooks/useGlobal";
 import { generatePDF } from "@/lib/pdf";
 import { ReviewStats } from "@/lib/types";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
@@ -101,6 +102,7 @@ export default function Stats() {
   const [reviewStats, setReviewStats] = useState<ReviewStats[] | null>(null);
   const [loading, setLoading] = useState(true);
   const { resumeUploaded } = useGlobal();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -133,10 +135,10 @@ export default function Stats() {
       ) : (
         <button
           type="button"
-          onClick={() => (window.location.href = "/")}
+          onClick={() => router.push("/")}
           className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 mb-6 px-6 py-2 rounded-lg text-white text-lg md:text-xl"
         >
-          Upload a Resume
+          Upload a resume
         </button>
       )}
       {loading ? (
