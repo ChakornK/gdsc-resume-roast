@@ -150,9 +150,9 @@ function RateResumeCard({
     visible && (
       <div
         key={resume.link}
-        className="flex flex-col items-center gap-4 bg-white shadow-md px-4 py-8 border rounded-xl gap"
+        className="flex flex-col items-center gap-4 bg-white shadow-md p-8 border rounded-xl gap"
       >
-        <div className="flex sm:flex-row flex-col gap-4">
+        <div className="flex sm:flex-row flex-col gap-4 w-full">
           <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0 sm:w-2/5 shrink-0">
             {RUBRICS.map((rubric: keyof Ratings) => (
               <div key={rubric} className="w-full text-center">
@@ -185,7 +185,7 @@ function RateResumeCard({
           </div>
         </div>
 
-        <div className="flex flex-col items-stretch md:px-4 w-full">
+        <div className="flex flex-col items-stretch w-full">
           <h4 className="mb-2 px-1 font-medium text-lg">Comments</h4>
           <textarea
             className="p-2 border rounded-lg min-h-32 resize-y"

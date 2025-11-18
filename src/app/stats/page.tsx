@@ -15,7 +15,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
     <div
       className={`${
         self ? "border-blue-400 border-4" : "border"
-      } px-4 py-8 rounded-xl shadow-md bg-white`}
+      } p-8 rounded-xl shadow-md bg-white`}
     >
       <div className="flex sm:flex-row flex-col gap-4">
         <div className="flex flex-col justify-center items-center space-y-6 mb-6 xl:mb-0 sm:w-2/5 shrink-0">
@@ -81,7 +81,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
         </div>
       </div>
 
-      <div className="flex flex-col items-stretch gap-2 mt-4 md:px-4 w-full">
+      <div className="flex flex-col items-stretch gap-2 mt-4 w-full">
         <h4 className="font-medium text-lg">Comments</h4>
         <div className="space-y-2">
           {r.comments.map((c, i) => (
