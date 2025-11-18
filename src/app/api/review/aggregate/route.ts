@@ -19,21 +19,35 @@ export async function GET(_: NextRequest) {
         resumeId: "asc",
       },
     });
+
     const reviews = await prisma.review.findMany({});
 
     const resumes = await prisma.resume.findMany({});
 
-    const res = aggregatedReviews.map((r) => {
-      const resume = resumes.find((resume) => resume.id == r.resumeId);
-      const comments = reviews
-        .filter((review) => review.resumeId == r.resumeId)
-        .map((review) => review.comments);
-      return {
-        ...r,
-        resumeLink: resume?.link,
-        comments,
-      };
-    });
+    const res = aggregatedReviews.map(
+      (
+        r: Partial<
+          (typeof aggregatedReviews)[0] & {
+            resumeLink: string;
+            comments: string[];
+          }
+        >
+      ) => {
+        const resume = resumes.find((resume) => resume.id == r.resumeId);
+        const comments = reviews
+          .filter((review) => review.resumeId == r.resumeId)
+          .map((review) => review.comments);
+
+        const processed = {
+          ...r,
+          resumeLink: resume?.link,
+          comments,
+        };
+        delete processed.resumeId;
+
+        return processed;
+      }
+    );
 
     return NextResponse.json(res);
   } catch (e) {

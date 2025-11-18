@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import type { Resume } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,8 +20,12 @@ export async function POST(request: NextRequest) {
         },
       ],
     });
+    const res = resumes.map((r: Partial<Resume>) => {
+      delete r.id;
+      return r;
+    });
 
-    return NextResponse.json(resumes);
+    return NextResponse.json(res);
   } catch (e) {
     console.error(e);
 

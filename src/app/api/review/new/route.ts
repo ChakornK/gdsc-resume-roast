@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 export async function POST(request: NextRequest) {
   try {
     const {
-      resumeId,
+      resumeLink,
       formatting,
       relevance,
       structure,
@@ -12,6 +12,11 @@ export async function POST(request: NextRequest) {
       wording,
       comments,
     } = await request.json();
+
+    const resume = await prisma.resume.findFirstOrThrow({
+      where: { link: resumeLink },
+    });
+    const resumeId = resume.id;
 
     await prisma.review.create({
       data: {

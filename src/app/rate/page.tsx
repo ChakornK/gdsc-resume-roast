@@ -2,7 +2,7 @@
 
 import Loading from "@/components/Loading";
 import { useGlobal } from "@/hooks/useGlobal";
-import { Resume } from "@prisma/client";
+import { ClientResume } from "@/lib/types";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -26,7 +26,7 @@ const RUBRICS = [
 
 export default function Rate() {
   const { resumeUploaded, resumesRated } = useGlobal();
-  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [resumes, setResumes] = useState<ClientResume[]>([]);
   const [rawResumeNum, setRawResumeNum] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [rated, setRated] = useState<number>(resumesRated.length);
@@ -45,7 +45,7 @@ export default function Rate() {
           });
           setRawResumeNum(res.data.length);
           setResumes(
-            res.data.filter((r: Resume) => !resumesRated.includes(r.id))
+            res.data.filter((r: ClientResume) => !resumesRated.includes(r.link))
           );
         } finally {
           setLoading(false);
@@ -91,7 +91,7 @@ export default function Rate() {
         <div className="gap-8 grid grid-cols-1 xl:grid-cols-2">
           {resumes.map((resume) => (
             <RateResumeCard
-              key={resume.id}
+              key={resume.link}
               resume={resume}
               onRatingSubmitted={() => setRated((r) => r + 1)}
             />
@@ -106,7 +106,7 @@ function RateResumeCard({
   resume,
   onRatingSubmitted,
 }: {
-  resume: Resume;
+  resume: ClientResume;
   onRatingSubmitted: () => void;
 }) {
   const [visible, setVisible] = useState<boolean>(true);
@@ -132,13 +132,13 @@ function RateResumeCard({
     setSubmitting(true);
     try {
       await axios.post("/api/review/new", {
-        resumeId: resume.id,
+        resumeLink: resume.link,
         ...ratings,
         comments,
       });
       setVisible(false);
       onRatingSubmitted();
-      setResumesRated([...resumesRated, resume.id]);
+      setResumesRated([...resumesRated, resume.link]);
     } catch {
       alert("Failed to submit review");
     } finally {
@@ -149,7 +149,7 @@ function RateResumeCard({
   return (
     visible && (
       <div
-        key={resume.id}
+        key={resume.link}
         className="flex flex-col items-center gap-4 bg-white shadow-md px-4 py-8 border rounded-xl gap"
       >
         <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
