@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { GlobalContext } from "@/contexts/GlobalContext";
 import Loading from "@/components/Loading";
-import Image from "next/image";
 
 interface GlobalProviderProps {
   children: React.ReactNode;
@@ -65,7 +64,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
         <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
           We apologize for the inconvenience, please try again later!
         </div>
-        <Image
+        <img
           src={"/logo.svg"}
           alt="GDSC"
           width={200}

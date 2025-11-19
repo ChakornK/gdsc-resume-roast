@@ -3,7 +3,6 @@ import { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useGlobal } from "@/hooks/useGlobal";
-import Image from "next/image";
 import Icon from "@mdi/react";
 import { mdiArrowRight, mdiTrashCanOutline, mdiTrayArrowUp } from "@mdi/js";
 import { MAX_RESUME_SIZE_MB } from "@/lib/consts";
@@ -98,7 +97,7 @@ export default function Home() {
           : "Upload your resume here!"}
       </div>
 
-      <Image
+      <img
         src={"/logo.svg"}
         alt="GDSC"
         width={200}
