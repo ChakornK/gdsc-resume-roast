@@ -26,6 +26,7 @@ const RUBRICS = [
   "wording",
 ] as (keyof Ratings)[];
 
+let refreshTimer = 0;
 export default function Rate() {
   const { resumeUploaded, resumesRated, setDbFailed } = useGlobal();
   const [resumes, setResumes] = useState<ClientResume[]>([]);
@@ -35,27 +36,42 @@ export default function Rate() {
 
   const router = useRouter();
 
+  const fetchResumes = async () => {
+    try {
+      const res = await axios.post("/api/resume/query", {
+        id: resumeUploaded,
+      });
+      setRawResumeNum(res.data.length);
+      setResumes(
+        res.data.filter((r: ClientResume) => !resumesRated.includes(r.link))
+      );
+      setLoading(false);
+    } catch {
+      setDbFailed(true);
+    }
+  };
+
   useEffect(() => {
     if (!resumeUploaded) {
       router.push("/");
     } else {
-      (async () => {
-        setLoading(true);
-        try {
-          const res = await axios.post("/api/resume/query", {
-            id: resumeUploaded,
-          });
-          setRawResumeNum(res.data.length);
-          setResumes(
-            res.data.filter((r: ClientResume) => !resumesRated.includes(r.link))
-          );
-          setLoading(false);
-        } catch {
-          setDbFailed(true);
-        }
-      })();
+      fetchResumes();
     }
-  }, [resumeUploaded, router]);
+  }, [resumeUploaded]);
+
+  useEffect(() => {
+    if (refreshTimer === 0) {
+      refreshTimer = setInterval(fetchResumes, 10000) as never as number;
+    }
+  }, []);
+  useEffect(() => {
+    if (rawResumeNum >= MINIMAL_RESUMES_TO_RATE) {
+      try {
+        clearInterval(refreshTimer);
+      } catch {}
+      refreshTimer = 0;
+    }
+  }, [rawResumeNum]);
 
   return (
     <main className="flex flex-col justify-center items-center p-8 min-h-screen">

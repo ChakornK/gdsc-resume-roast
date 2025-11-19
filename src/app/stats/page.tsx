@@ -107,11 +107,30 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
   );
 };
 
+let refreshTimer = 0;
 export default function Stats() {
   const [reviewStats, setReviewStats] = useState<ReviewStats[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selfResume, setSelfResume] = useState<ReviewStats | null>(null);
   const { resumeUploaded, resumesRated, setDbFailed } = useGlobal();
   const router = useRouter();
+
+  const fetchReviews = async (isRefresh = false) => {
+    try {
+      const res = await axios.post("/api/review/aggregate", {
+        id: resumeUploaded,
+      });
+      if (
+        !isRefresh ||
+        (isRefresh && res.data.find((r: ReviewStats) => r.self === true))
+      ) {
+        setReviewStats(res.data);
+      }
+      setLoading(false);
+    } catch {
+      setDbFailed(true);
+    }
+  };
 
   useEffect(() => {
     if (!resumeUploaded) {
@@ -119,23 +138,29 @@ export default function Stats() {
     } else if (resumesRated.length < MINIMAL_RESUMES_TO_RATE) {
       router.push("/rate");
     } else {
-      (async () => {
-        try {
-          const res = await axios.post("/api/review/aggregate", {
-            id: resumeUploaded,
-          });
-          setReviewStats(res.data);
-          setLoading(false);
-        } catch {
-          setDbFailed(true);
-        }
-      })();
+      fetchReviews();
     }
   }, []);
 
-  const selfResume = resumeUploaded
-    ? reviewStats?.find((r) => r.self === true)
-    : null;
+  useEffect(() => {
+    if (refreshTimer === 0) {
+      refreshTimer = setInterval(fetchReviews, 10000) as never as number;
+    }
+  }, []);
+  useEffect(() => {
+    if (selfResume) {
+      try {
+        clearInterval(refreshTimer);
+      } catch {}
+      refreshTimer = 0;
+    }
+  }, [selfResume]);
+
+  useEffect(() => {
+    setSelfResume(
+      (resumeUploaded && reviewStats?.find((r) => r.self === true)) || null
+    );
+  }, [reviewStats]);
 
   return (
     <main className="flex flex-col justify-center items-center p-8 min-h-screen">
