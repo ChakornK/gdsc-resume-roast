@@ -277,16 +277,16 @@ function RateResumeCard({
           />
         </div>
 
-        <div className="flex flex-row space-x-4">
+        <div className="flex sm:flex-row flex-col items-stretch gap-2 w-full">
           <button
             onClick={() => window.open(resume.link)}
-            className="btn primary-btn"
+            className="sm:w-1/2 btn primary-btn"
           >
             <Icon path={mdiOpenInNew} size="1em" />
             Open PDF in new tab
           </button>
           <button
-            className={"btn filled-btn"}
+            className="sm:w-1/2 btn filled-btn"
             onClick={handleRatingSubmit}
             disabled={
               Object.keys(ratings).length !== RUBRICS.length ||
