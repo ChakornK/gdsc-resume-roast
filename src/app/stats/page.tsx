@@ -110,7 +110,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
 export default function Stats() {
   const [reviewStats, setReviewStats] = useState<ReviewStats[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const { resumeUploaded, resumesRated } = useGlobal();
+  const { resumeUploaded, resumesRated, setDbFailed } = useGlobal();
   const router = useRouter();
 
   useEffect(() => {
@@ -125,8 +125,9 @@ export default function Stats() {
             id: resumeUploaded,
           });
           setReviewStats(res.data);
-        } finally {
           setLoading(false);
+        } catch {
+          setDbFailed(true);
         }
       })();
     }

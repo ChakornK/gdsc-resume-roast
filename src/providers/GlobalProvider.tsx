@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { GlobalContext } from "@/contexts/GlobalContext";
 import Loading from "@/components/Loading";
-import axios from "axios";
 import Image from "next/image";
 
 interface GlobalProviderProps {
@@ -15,24 +14,9 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
   const [ratingUploaded, setRatingUploaded] = useState<boolean>(false);
   const [resumesRated, setResumesRated] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [checkDb, setCheckDb] = useState<boolean | null>(null);
+  const [dbFailed, setDbFailed] = useState<boolean>(false);
 
   useEffect(() => {
-    const checkDatabase = async () => {
-      try {
-        const res = await axios.get("/api/checkdb");
-        if (res.status === 200) {
-          setCheckDb(true);
-        } else {
-          setCheckDb(false);
-        }
-      } catch (error) {
-        setCheckDb(false);
-      }
-    };
-
-    checkDatabase();
-
     const storedResumeUploaded = localStorage.getItem("resumeUploaded");
     const storedRatingUploaded = localStorage.getItem("ratingUploaded");
     const storedResumesRated = localStorage.getItem("resumesRated");
@@ -64,7 +48,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
     localStorage.setItem("resumesRated", JSON.stringify(resumesRated));
   }, [resumesRated]);
 
-  if (loading || checkDb === null) {
+  if (loading) {
     return (
       <main className="flex flex-col justify-center items-center p-8 min-h-screen">
         <Loading />
@@ -72,7 +56,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
     );
   }
 
-  if (checkDb === false) {
+  if (dbFailed) {
     return (
       <main className="flex flex-col justify-center items-center p-8 min-h-screen">
         <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
@@ -98,10 +82,12 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
         resumeUploaded,
         ratingUploaded,
         resumesRated,
+        dbFailed,
         setResumeUploaded,
         setRatingUploaded,
         setResumesRated,
         setLoading,
+        setDbFailed,
         loading,
       }}
     >

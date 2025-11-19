@@ -27,7 +27,7 @@ const RUBRICS = [
 ] as (keyof Ratings)[];
 
 export default function Rate() {
-  const { resumeUploaded, resumesRated } = useGlobal();
+  const { resumeUploaded, resumesRated, setDbFailed } = useGlobal();
   const [resumes, setResumes] = useState<ClientResume[]>([]);
   const [rawResumeNum, setRawResumeNum] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -49,8 +49,9 @@ export default function Rate() {
           setResumes(
             res.data.filter((r: ClientResume) => !resumesRated.includes(r.link))
           );
-        } finally {
           setLoading(false);
+        } catch {
+          setDbFailed(true);
         }
       })();
     }
