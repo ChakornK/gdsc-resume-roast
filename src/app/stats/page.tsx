@@ -11,6 +11,102 @@ import Icon from "@mdi/react";
 import { mdiArrowRight, mdiOpenInNew, mdiTrayArrowDown } from "@mdi/js";
 import { MINIMAL_RESUMES_TO_RATE } from "@/lib/consts";
 
+let refreshTimer = 0;
+export default function Stats() {
+  const [reviewStats, setReviewStats] = useState<ReviewStats[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selfResume, setSelfResume] = useState<ReviewStats | null>(null);
+  const { resumeUploaded, resumesRated, setDbFailed } = useGlobal();
+  const router = useRouter();
+
+  const fetchReviews = async (isRefresh = false) => {
+    try {
+      const res = await axios.post("/api/review/aggregate", {
+        id: resumeUploaded,
+      });
+      if (
+        !isRefresh ||
+        (isRefresh && res.data.find((r: ReviewStats) => r.self === true))
+      ) {
+        setReviewStats(res.data);
+      }
+      setLoading(false);
+    } catch {
+      setDbFailed(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!resumeUploaded) {
+      router.push("/");
+    } else if (resumesRated.length < MINIMAL_RESUMES_TO_RATE) {
+      router.push("/rate");
+    } else {
+      fetchReviews();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (refreshTimer === 0) {
+      refreshTimer = setInterval(fetchReviews, 10000) as never as number;
+    }
+  }, []);
+  useEffect(() => {
+    if (selfResume) {
+      try {
+        clearInterval(refreshTimer);
+      } catch {}
+      refreshTimer = 0;
+    }
+  }, [selfResume]);
+
+  useEffect(() => {
+    setSelfResume(
+      (resumeUploaded && reviewStats?.find((r) => r.self === true)) || null
+    );
+  }, [reviewStats]);
+
+  return (
+    <main className="flex flex-col justify-center items-center p-8 min-h-screen">
+      <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
+        Resume statistics
+      </div>
+      {!loading && (
+        <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
+          {selfResume
+            ? "The highlighted resume is yours!"
+            : "No ratings for your resume yet"}
+        </div>
+      )}
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <button
+            type="button"
+            onClick={() => router.push("/rate")}
+            className="mb-8 text-lg md:text-xl btn primary-btn"
+          >
+            Rate more resumes
+            <Icon path={mdiArrowRight} size="1em" />
+          </button>
+          <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
+            {selfResume && (
+              <ReviewStatCard key={0} r={selfResume} self={true} />
+            )}
+            {Array.from({ length: 150 }, () => reviewStats)
+              .flat()
+              ?.filter((r) => r.resumeId != resumeUploaded)
+              .map((r, i) => (
+                <ReviewStatCard key={i + 1} r={r} self={false} />
+              ))}
+          </div>
+        </>
+      )}
+    </main>
+  );
+}
+
 const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
   const [generatingPdf, setGeneratingPdf] = useState(false);
 
@@ -106,98 +202,3 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
     </div>
   );
 };
-
-let refreshTimer = 0;
-export default function Stats() {
-  const [reviewStats, setReviewStats] = useState<ReviewStats[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [selfResume, setSelfResume] = useState<ReviewStats | null>(null);
-  const { resumeUploaded, resumesRated, setDbFailed } = useGlobal();
-  const router = useRouter();
-
-  const fetchReviews = async (isRefresh = false) => {
-    try {
-      const res = await axios.post("/api/review/aggregate", {
-        id: resumeUploaded,
-      });
-      if (
-        !isRefresh ||
-        (isRefresh && res.data.find((r: ReviewStats) => r.self === true))
-      ) {
-        setReviewStats(res.data);
-      }
-      setLoading(false);
-    } catch {
-      setDbFailed(true);
-    }
-  };
-
-  useEffect(() => {
-    if (!resumeUploaded) {
-      router.push("/");
-    } else if (resumesRated.length < MINIMAL_RESUMES_TO_RATE) {
-      router.push("/rate");
-    } else {
-      fetchReviews();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (refreshTimer === 0) {
-      refreshTimer = setInterval(fetchReviews, 10000) as never as number;
-    }
-  }, []);
-  useEffect(() => {
-    if (selfResume) {
-      try {
-        clearInterval(refreshTimer);
-      } catch {}
-      refreshTimer = 0;
-    }
-  }, [selfResume]);
-
-  useEffect(() => {
-    setSelfResume(
-      (resumeUploaded && reviewStats?.find((r) => r.self === true)) || null
-    );
-  }, [reviewStats]);
-
-  return (
-    <main className="flex flex-col justify-center items-center p-8 min-h-screen">
-      <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
-        Resume statistics
-      </div>
-      {!loading && (
-        <div className="mb-8 font-semibold md:text-md text-sm xl:text-lg text-center">
-          {selfResume
-            ? "The highlighted resume is yours!"
-            : "No ratings for your resume yet"}
-        </div>
-      )}
-      {loading ? (
-        <Loading />
-      ) : (
-        <>
-          <button
-            type="button"
-            onClick={() => router.push("/rate")}
-            className="mb-8 text-lg md:text-xl btn primary-btn"
-          >
-            Rate more resumes
-            <Icon path={mdiArrowRight} size="1em" />
-          </button>
-          <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
-            {selfResume && (
-              <ReviewStatCard key={0} r={selfResume} self={true} />
-            )}
-            {reviewStats
-              ?.filter((r) => r.resumeId != resumeUploaded)
-              .map((r, i) => (
-                <ReviewStatCard key={i + 1} r={r} self={false} />
-              ))}
-          </div>
-        </>
-      )}
-    </main>
-  );
-}
