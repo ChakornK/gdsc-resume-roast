@@ -10,21 +10,16 @@ interface GlobalProviderProps {
 
 export default function GlobalProvider({ children }: GlobalProviderProps) {
   const [resumeUploaded, setResumeUploaded] = useState<number | null>(null);
-  const [ratingUploaded, setRatingUploaded] = useState<boolean>(false);
   const [resumesRated, setResumesRated] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [dbFailed, setDbFailed] = useState<boolean>(false);
 
   useEffect(() => {
     const storedResumeUploaded = localStorage.getItem("resumeUploaded");
-    const storedRatingUploaded = localStorage.getItem("ratingUploaded");
     const storedResumesRated = localStorage.getItem("resumesRated");
 
     if (storedResumeUploaded) {
       setResumeUploaded(JSON.parse(storedResumeUploaded));
-    }
-    if (storedRatingUploaded) {
-      setRatingUploaded(JSON.parse(storedRatingUploaded));
     }
     if (storedResumesRated) {
       setResumesRated(JSON.parse(storedResumesRated));
@@ -38,10 +33,6 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
       localStorage.setItem("resumeUploaded", JSON.stringify(resumeUploaded));
     }
   }, [resumeUploaded]);
-
-  useEffect(() => {
-    localStorage.setItem("ratingUploaded", JSON.stringify(ratingUploaded));
-  }, [ratingUploaded]);
 
   useEffect(() => {
     localStorage.setItem("resumesRated", JSON.stringify(resumesRated));
@@ -79,11 +70,9 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
     <GlobalContext.Provider
       value={{
         resumeUploaded,
-        ratingUploaded,
         resumesRated,
         dbFailed,
         setResumeUploaded,
-        setRatingUploaded,
         setResumesRated,
         setLoading,
         setDbFailed,
