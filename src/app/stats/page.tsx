@@ -24,11 +24,12 @@ export default function Stats() {
       const res = await axios.post("/api/review/aggregate", {
         id: resumeUploaded,
       });
-      if (
-        !isRefresh ||
-        (isRefresh && res.data.find((r: ReviewStats) => r.self === true))
-      ) {
-        setReviewStats(res.data);
+      const mine = res.data.find((r: ReviewStats) => r.self === true);
+      res.data = res.data
+        .filter((r: ReviewStats) => r.self === false)
+        .slice(0, 50);
+      if (!isRefresh || (isRefresh && mine)) {
+        setReviewStats(mine ? [mine, ...res.data] : res.data);
       }
       setLoading(false);
     } catch {
@@ -91,13 +92,10 @@ export default function Stats() {
             <Icon path={mdiArrowRight} size="1em" />
           </button>
           <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
-            {selfResume && (
-              <ReviewStatCard key={0} r={selfResume} self={true} />
-            )}
             {reviewStats
               ?.filter((r) => r.resumeId != resumeUploaded)
               .map((r, i) => (
-                <ReviewStatCard key={i + 1} r={r} self={false} />
+                <ReviewStatCard key={r.resumeLink} r={r} />
               ))}
           </div>
         </>
@@ -106,13 +104,13 @@ export default function Stats() {
   );
 }
 
-const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
+const ReviewStatCard = ({ r }: { r: ReviewStats }) => {
   const [generatingPdf, setGeneratingPdf] = useState(false);
 
   return (
     <div
       className={`${
-        self ? "border-primary border-4" : ""
+        r.self ? "border-primary border-4" : ""
       } p-8 rounded-3xl shadow-md bg-surface`}
     >
       <div className="flex sm:flex-row flex-col gap-4">
@@ -161,7 +159,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
           <Icon path={mdiOpenInNew} size="1em" />
           Open PDF in new tab
         </button>
-        {self && (
+        {r.self && (
           <button
             onClick={() => {
               (async () => {

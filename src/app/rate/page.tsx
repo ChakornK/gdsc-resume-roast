@@ -41,9 +41,11 @@ export default function Rate() {
       const res = await axios.post("/api/resume/query", {
         id: resumeUploaded,
       });
-      setRawResumeNum(res.data.length);
+      setRawResumeNum(Math.min(50, res.data.length));
       setResumes(
-        res.data.filter((r: ClientResume) => !resumesRated.includes(r.link))
+        res.data
+          .filter((r: ClientResume) => !resumesRated.includes(r.link))
+          .slice(0, 50)
       );
       setLoading(false);
     } catch {
