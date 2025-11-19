@@ -19,3 +19,17 @@ export interface ReviewStats {
   reviewCount: number;
   self: boolean;
 }
+
+export interface AggregatedReview {
+  resumeId: string;
+  _avg: {
+    structure: number | null;
+    clarity: number | null;
+    formatting: number | null;
+    relevance: number | null;
+    wording: number | null;
+  };
+  _count: {
+    id: number;
+  };
+}

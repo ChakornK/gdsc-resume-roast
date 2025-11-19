@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { AggregatedReview } from "@/lib/types";
+import type { Resume, Review } from "@prisma/client";
 
-export async function POST(request: NextRequest) {
-  try {
-    const { id } = await request.json();
-
-    const aggregatedReviews = await prisma.review.groupBy({
+let cachedTime = 0;
+let cachedData: {
+  aggregatedReviews: AggregatedReview[];
+  reviews: Review[];
+  resumes: Resume[];
+} | null = null;
+const getFromPrisma = async () => {
+  if (cachedData && Date.now() - cachedTime < 1000 * 8) {
+    return cachedData;
+  }
+  const [aggregatedReviews, reviews, resumes] = await Promise.all([
+    prisma.review.groupBy({
       by: ["resumeId"],
       _avg: {
         structure: true,
@@ -20,11 +29,20 @@ export async function POST(request: NextRequest) {
       orderBy: {
         resumeId: "asc",
       },
-    });
+    }),
+    prisma.review.findMany({}),
+    prisma.resume.findMany({}),
+  ]);
+  cachedTime = Date.now();
+  cachedData = { aggregatedReviews, reviews, resumes };
+  return { aggregatedReviews, reviews, resumes };
+};
 
-    const reviews = await prisma.review.findMany({});
+export async function POST(request: NextRequest) {
+  try {
+    const { id } = await request.json();
 
-    const resumes = await prisma.resume.findMany({});
+    const { aggregatedReviews, reviews, resumes } = await getFromPrisma();
 
     const res = aggregatedReviews.map(
       (
