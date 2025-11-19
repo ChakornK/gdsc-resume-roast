@@ -94,8 +94,7 @@ export default function Stats() {
             {selfResume && (
               <ReviewStatCard key={0} r={selfResume} self={true} />
             )}
-            {Array.from({ length: 150 }, () => reviewStats)
-              .flat()
+            {reviewStats
               ?.filter((r) => r.resumeId != resumeUploaded)
               .map((r, i) => (
                 <ReviewStatCard key={i + 1} r={r} self={false} />
