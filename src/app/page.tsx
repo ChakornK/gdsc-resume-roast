@@ -18,7 +18,6 @@ export default function Home() {
   const router = useRouter();
 
   const handleFile = (file: File) => {
-    console.log(file.size);
     if (file.type !== "application/pdf") {
       setError("Please upload a valid PDF file.");
       setFile(null);
