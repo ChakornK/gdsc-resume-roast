@@ -125,7 +125,7 @@ export const generatePDF = async (resumeReviews: ReviewStats) => {
           </Text>
           <View style={stylesheet.ratingsContainer}>
             <View>
-              <Text>Structure: {structure.toPrecision(2)}/5.0</Text>
+              <Text>Structure: {structure.toPrecision(2)} / 5.0</Text>
               <View style={stylesheet.bar}>
                 <View
                   style={[
@@ -141,7 +141,7 @@ export const generatePDF = async (resumeReviews: ReviewStats) => {
             </View>
 
             <View>
-              <Text>Clarity: {clarity.toPrecision(2)}/5.0</Text>
+              <Text>Clarity: {clarity.toPrecision(2)} / 5.0</Text>
               <View style={stylesheet.bar}>
                 <View
                   style={[
@@ -157,7 +157,7 @@ export const generatePDF = async (resumeReviews: ReviewStats) => {
             </View>
 
             <View>
-              <Text>Formatting: {formatting.toPrecision(2)}/5.0</Text>
+              <Text>Formatting: {formatting.toPrecision(2)} / 5.0</Text>
               <View style={stylesheet.bar}>
                 <View
                   style={[
@@ -175,7 +175,7 @@ export const generatePDF = async (resumeReviews: ReviewStats) => {
             </View>
 
             <View>
-              <Text>Relevance: {relevance.toPrecision(2)}/5.0</Text>
+              <Text>Relevance: {relevance.toPrecision(2)} / 5.0</Text>
               <View style={stylesheet.bar}>
                 <View
                   style={[
@@ -191,7 +191,7 @@ export const generatePDF = async (resumeReviews: ReviewStats) => {
             </View>
 
             <View>
-              <Text>Wording: {wording.toPrecision(2)}/5.0</Text>
+              <Text>Wording: {wording.toPrecision(2)} / 5.0</Text>
               <View style={stylesheet.bar}>
                 <View
                   style={[
