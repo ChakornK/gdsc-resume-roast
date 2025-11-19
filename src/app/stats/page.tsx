@@ -10,10 +10,14 @@ import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
 import { mdiArrowRight, mdiOpenInNew, mdiTrayArrowDown } from "@mdi/js";
 import { MINIMAL_RESUMES_TO_RATE } from "@/lib/consts";
+import { Paginator } from "@/components/Paginator";
+
+const MAX_PER_PAGE = 16;
 
 let refreshTimer = 0;
 export default function Stats() {
-  const [reviewStats, setReviewStats] = useState<ReviewStats[] | null>(null);
+  const [reviewStats, setReviewStats] = useState<ReviewStats[][]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [selfResume, setSelfResume] = useState<ReviewStats | null>(null);
   const { resumeUploaded, resumesRated, setDbFailed } = useGlobal();
@@ -25,11 +29,19 @@ export default function Stats() {
         id: resumeUploaded,
       });
       const mine = res.data.find((r: ReviewStats) => r.self === true);
-      res.data = res.data
-        .filter((r: ReviewStats) => r.self === false)
-        .slice(0, 50);
+      if (mine) setSelfResume(mine);
+      const arranged = mine
+        ? [mine, ...res.data.filter((r: ReviewStats) => r.self === false)]
+        : res.data;
+
       if (!isRefresh || (isRefresh && mine)) {
-        setReviewStats(mine ? [mine, ...res.data] : res.data);
+        setReviewStats(
+          Array.from(
+            { length: Math.ceil(arranged.length / MAX_PER_PAGE) },
+            (_, i) =>
+              arranged.slice(i * MAX_PER_PAGE, i * MAX_PER_PAGE + MAX_PER_PAGE)
+          )
+        );
       }
       setLoading(false);
     } catch {
@@ -61,12 +73,6 @@ export default function Stats() {
     }
   }, [selfResume]);
 
-  useEffect(() => {
-    setSelfResume(
-      (resumeUploaded && reviewStats?.find((r) => r.self === true)) || null
-    );
-  }, [reviewStats]);
-
   return (
     <main className="flex flex-col justify-center items-center p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
@@ -82,23 +88,33 @@ export default function Stats() {
       {loading ? (
         <Loading />
       ) : (
-        <>
-          <button
-            type="button"
-            onClick={() => router.push("/rate")}
-            className="mb-8 text-lg md:text-xl btn primary-btn"
-          >
-            Rate more resumes
-            <Icon path={mdiArrowRight} size="1em" />
-          </button>
-          <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
-            {reviewStats
-              ?.filter((r) => r.resumeId != resumeUploaded)
-              .map((r, i) => (
-                <ReviewStatCard key={r.resumeLink} r={r} />
+        reviewStats.length > 0 && (
+          <>
+            <button
+              type="button"
+              onClick={() => router.push("/rate")}
+              className="mb-8 text-lg md:text-xl btn primary-btn"
+            >
+              Rate more resumes
+              <Icon path={mdiArrowRight} size="1em" />
+            </button>
+            <Paginator
+              n={reviewStats.length}
+              current={currentPage}
+              setCurrent={setCurrentPage}
+            />
+            <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2 my-8">
+              {reviewStats[currentPage].map((resume) => (
+                <ReviewStatCard key={resume.resumeLink} r={resume} />
               ))}
-          </div>
-        </>
+            </div>
+            <Paginator
+              n={reviewStats.length}
+              current={currentPage}
+              setCurrent={setCurrentPage}
+            />
+          </>
+        )
       )}
     </main>
   );

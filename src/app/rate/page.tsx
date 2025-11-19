@@ -1,6 +1,7 @@
 "use client";
 
 import Loading from "@/components/Loading";
+import { Paginator } from "@/components/Paginator";
 import { useGlobal } from "@/hooks/useGlobal";
 import { MINIMAL_RESUMES_TO_RATE } from "@/lib/consts";
 import { ClientResume } from "@/lib/types";
@@ -26,10 +27,13 @@ const RUBRICS = [
   "wording",
 ] as (keyof Ratings)[];
 
+const MAX_PER_PAGE = 16;
+
 let refreshTimer = 0;
 export default function Rate() {
   const { resumeUploaded, resumesRated, setDbFailed } = useGlobal();
-  const [resumes, setResumes] = useState<ClientResume[]>([]);
+  const [resumes, setResumes] = useState<ClientResume[][]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [rawResumeNum, setRawResumeNum] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [rated, setRated] = useState<number>(resumesRated.length);
@@ -41,11 +45,16 @@ export default function Rate() {
       const res = await axios.post("/api/resume/query", {
         id: resumeUploaded,
       });
-      setRawResumeNum(Math.min(50, res.data.length));
+      setRawResumeNum(res.data.length);
+      const filtered = res.data.filter(
+        (r: ClientResume) => !resumesRated.includes(r.link)
+      );
       setResumes(
-        res.data
-          .filter((r: ClientResume) => !resumesRated.includes(r.link))
-          .slice(0, 50)
+        Array.from(
+          { length: Math.ceil(filtered.length / MAX_PER_PAGE) },
+          (_, i) =>
+            filtered.slice(i * MAX_PER_PAGE, i * MAX_PER_PAGE + MAX_PER_PAGE)
+        )
       );
       setLoading(false);
     } catch {
@@ -109,15 +118,27 @@ export default function Rate() {
       {loading ? (
         <Loading />
       ) : rawResumeNum < MINIMAL_RESUMES_TO_RATE ? null : (
-        <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2">
-          {resumes.map((resume) => (
-            <RateResumeCard
-              key={resume.link}
-              resume={resume}
-              onRatingSubmitted={() => setRated((r) => r + 1)}
-            />
-          ))}
-        </div>
+        <>
+          <Paginator
+            n={resumes.length}
+            current={currentPage}
+            setCurrent={setCurrentPage}
+          />
+          <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2 my-8">
+            {resumes[currentPage].map((resume) => (
+              <RateResumeCard
+                key={resume.link + Math.random()}
+                resume={resume}
+                onRatingSubmitted={() => setRated((r) => r + 1)}
+              />
+            ))}
+          </div>
+          <Paginator
+            n={resumes.length}
+            current={currentPage}
+            setCurrent={setCurrentPage}
+          />
+        </>
       )}
     </main>
   );
