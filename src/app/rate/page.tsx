@@ -239,7 +239,7 @@ function RateResumeCard({
             Open PDF in new tab
           </button>
           <button
-            className={"btn primary-btn"}
+            className={"btn filled-btn"}
             onClick={handleRatingSubmit}
             disabled={
               Object.keys(ratings).length !== RUBRICS.length ||

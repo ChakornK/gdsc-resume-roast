@@ -54,6 +54,9 @@ body {
 .primary-btn {
   @apply bg-primary-container text-on-primary-container;
 }
+.filled-btn {
+  @apply bg-primary text-on-primary;
+}
 .critical-btn {
   @apply bg-error-container text-on-error-container;
 }

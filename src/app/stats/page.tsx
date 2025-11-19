@@ -83,7 +83,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
                 setGeneratingPdf(false);
               })();
             }}
-            className="btn primary-btn grow"
+            className="btn filled-btn grow"
             disabled={generatingPdf}
           >
             <Icon path={mdiTrayArrowDown} size="1em" />
