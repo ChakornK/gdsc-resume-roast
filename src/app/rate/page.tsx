@@ -84,6 +84,16 @@ export default function Rate() {
     }
   }, [rawResumeNum]);
 
+  useEffect(() => {
+    let arr = resumes.flat();
+    arr = arr.filter((r: ClientResume) => !resumesRated.includes(r.link));
+    setResumes(
+      Array.from({ length: Math.ceil(arr.length / MAX_PER_PAGE) }, (_, i) =>
+        arr.slice(i * MAX_PER_PAGE, i * MAX_PER_PAGE + MAX_PER_PAGE)
+      )
+    );
+  }, [resumesRated]);
+
   return (
     <main className="flex flex-col justify-center items-center p-8 min-h-screen">
       <div className="mb-8 font-bold text-3xl md:text-5xl xl:text-7xl text-center">
@@ -125,13 +135,15 @@ export default function Rate() {
             setCurrent={setCurrentPage}
           />
           <div className="place-self-stretch gap-8 grid grid-cols-1 lg:grid-cols-2 my-8">
-            {resumes[currentPage].map((resume) => (
-              <RateResumeCard
-                key={resume.link + Math.random()}
-                resume={resume}
-                onRatingSubmitted={() => setRated((r) => r + 1)}
-              />
-            ))}
+            {resumes[currentPage]
+              .filter((r: ClientResume) => !resumesRated.includes(r.link))
+              .map((resume) => (
+                <RateResumeCard
+                  key={resume.link + Math.random()}
+                  resume={resume}
+                  onRatingSubmitted={() => setRated((r) => r + 1)}
+                />
+              ))}
           </div>
           <Paginator
             n={resumes.length}
