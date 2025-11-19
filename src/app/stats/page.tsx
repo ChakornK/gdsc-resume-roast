@@ -29,7 +29,7 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
               <div key={i} className="space-y-2 w-full text-center">
                 <h4 className="font-medium text-lg">{`${
                   k.charAt(0).toUpperCase() + k.slice(1)
-                }: ${calc.toPrecision(2)} / 5`}</h4>
+                }: ${calc.toPrecision(2)} / 5.0`}</h4>
                 <div className="bg-gray-300 m-auto rounded-full w-full max-w-xs h-2.5">
                   <div
                     className="rounded-full h-2.5"
