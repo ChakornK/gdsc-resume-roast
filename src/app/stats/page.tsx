@@ -8,12 +8,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
-import {
-  mdiArrowRight,
-  mdiOpenInNew,
-  mdiTrayArrowDown,
-  mdiTrayArrowUp,
-} from "@mdi/js";
+import { mdiArrowRight, mdiOpenInNew, mdiTrayArrowDown } from "@mdi/js";
 import { MINIMAL_RESUMES_TO_RATE } from "@/lib/consts";
 
 const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {

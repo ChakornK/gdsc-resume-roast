@@ -4,12 +4,7 @@ import Loading from "@/components/Loading";
 import { useGlobal } from "@/hooks/useGlobal";
 import { MINIMAL_RESUMES_TO_RATE } from "@/lib/consts";
 import { ClientResume } from "@/lib/types";
-import {
-  mdiArrowRight,
-  mdiChartBoxOutline,
-  mdiOpenInNew,
-  mdiSendVariantOutline,
-} from "@mdi/js";
+import { mdiArrowRight, mdiOpenInNew, mdiSendVariantOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";

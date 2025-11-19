@@ -6,7 +6,6 @@ import {
   StyleSheet,
   pdf,
   Font,
-  Image,
   Svg,
   G,
   Path,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import { s3, s3Put } from "@/lib/aws";
+import { s3Put } from "@/lib/aws";
 import { MAX_RESUME_SIZE_MB } from "@/lib/consts";
 
 export async function POST(request: NextRequest) {
