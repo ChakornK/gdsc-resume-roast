@@ -73,7 +73,10 @@ const ReviewStatCard = ({ r, self }: { r: ReviewStats; self: boolean }) => {
                 setGeneratingPdf(true);
                 try {
                   const url = await generatePDF(r);
-                  window.open(url);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "Resume roast summary.pdf";
+                  a.click();
                 } catch {}
                 setGeneratingPdf(false);
               })();

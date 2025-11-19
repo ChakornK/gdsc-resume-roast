@@ -82,7 +82,7 @@ export const generatePDF = async (resumeReviews: ReviewStats) => {
     resumeReviews._avg;
 
   const Pdf = ({ v }: { v: number }) => (
-    <Document title="Resume review summary">
+    <Document title="Resume roast summary">
       <Page size="LETTER" style={stylesheet.page}>
         <View style={stylesheet.header}>
           <Svg width="64" viewBox="0 0 279.668 136.844">
